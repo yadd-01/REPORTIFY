@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ berita.judul }}</title>
+</head>
+<body>
+    <a href="{% url 'beranda' %}">← Kembali ke Beranda</a>
+    <hr>
+    
+    <h1>{{ berita.judul }}</h1>
+    <p>Kategori: {{ berita.kategori.nama }} | Tanggal: {{ berita.tanggal_publikasi }}</p>
+
+    {% if berita.gambar_cover %}
+        <img src="{{ berita.gambar_cover.url }}" alt="Cover" style="max-width: 600px;">
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        {{ berita.konten|linebreaks }} 
+    </div>
+
+    <hr>
+    </body>
+</html>

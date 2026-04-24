@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Portal Berita AI</title>
+</head>
+<body>
+    <h1>Selamat Datang di Portal Berita Tim Kami</h1>
+    <hr>
+    <hr>
+    <h1>Berita Terkini dari GNews (Live API)</h1>
+    
+    {% for artikel in berita_api %}
+        <div style="border: 1px solid #0056b3; padding: 10px; margin-bottom: 10px; background-color: #f8f9fa;">
+            <h2>{{ artikel.title }}</h2>
+            <p><strong>Sumber:</strong> {{ artikel.source.name }} | <strong>Tanggal:</strong> {{ artikel.publishedAt }}</p>
+            
+            {% if artikel.image %}
+                <img src="{{ artikel.image }}" alt="Cover GNews" style="max-width: 300px;">
+            {% endif %}
+            
+            <p>{{ artikel.description }}</p>
+            <a href="{{ artikel.url }}" target="_blank">Baca di Sumber Asli</a>
+        </div>
+    {% empty %}
+        <p>Gagal memuat berita dari API saat ini.</p>
+    {% endfor %}
+
+    {% for berita in berita_list %}
+        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+            <h2>{{ berita.judul }}</h2>
+            <p><strong>Kategori:</strong> {{ berita.kategori.nama }} | <strong>Tanggal:</strong> {{ berita.tanggal_publikasi }}</p>
+            
+            {% if berita.gambar_cover %}
+                <img src="{{ berita.gambar_cover.url }}" alt="Cover" style="max-width: 300px;">
+            {% endif %}
+            
+            <p>{{ berita.konten|truncatewords:20 }}...</p> <a href="{% url 'detail_berita' berita.id %}">Baca Selengkapnya</a>
+        </div>
+    {% empty %}
+        <p>Gagal memuat berita dari API saat ini.</p>
+        {% if pesan_error %}
+            <p style="color: red; font-weight: bold;">Detail Masalah: {{ pesan_error }}</p>
+        {% endif %}
+    {% endfor %}
+
+</body>
+</html>

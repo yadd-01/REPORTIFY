@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('news.urls')), # Menyambungkan rute dari app news
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 # Tambahan agar gambar bisa tampil saat tahap pengembangan (server lokal)

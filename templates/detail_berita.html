@@ -1,24 +1,87 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ berita.judul }}</title>
-</head>
-<body>
-    <a href="{% url 'beranda' %}">← Kembali ke Beranda</a>
-    <hr>
-    
-    <h1>{{ berita.judul }}</h1>
-    <p>Kategori: {{ berita.kategori.nama }} | Tanggal: {{ berita.tanggal_publikasi }}</p>
+{% extends 'base.html' %}
 
-    {% if berita.gambar_cover %}
-        <img src="{{ berita.gambar_cover.url }}" alt="Cover" style="max-width: 600px;">
-    {% endif %}
+{% block title %}{{ berita.judul }} - REPORT.hub{% endblock %}
 
-    <div style="margin-top: 20px;">
-        {{ berita.konten|linebreaks }} 
+{% block content %}
+<div class="container-fluid px-4 px-lg-5 pb-5">
+    <div class="row">
+        
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{% url 'beranda' %}" class="text-decoration-none text-muted">Home</a></li>
+                    <li class="breadcrumb-item text-muted">{{ berita.kategori.nama }}</li>
+                    <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">{{ berita.judul|truncatewords:5 }}</li>
+                </ol>
+            </nav>
+
+            <h1 class="fw-bold mb-3" style="font-size: 2.8rem; line-height: 1.2;">{{ berita.judul }}</h1>
+            
+            <div class="d-flex align-items-center mb-4 text-muted">
+                <div class="badge bg-primary me-3 px-3 py-2 rounded-pill">{{ berita.kategori.nama }}</div>
+                <span><i class="far fa-calendar-alt me-1"></i> {{ berita.tanggal_publikasi|date:"d F Y" }}</span>
+                <span class="ms-3"><i class="far fa-user me-1"></i> Redaksi REPORT.hub</span>
+            </div>
+
+            {% if berita.gambar_cover %}
+                <img src="{{ berita.gambar_cover.url }}" class="img-fluid w-100 mb-4 shadow-sm" style="border-radius: 20px; max-height: 500px; object-fit: cover;">
+            {% endif %}
+
+            <div class="berita-content fs-5 text-dark mb-5" style="line-height: 1.8; text-align: justify;">
+                {{ berita.konten|linebreaks }}
+            </div>
+
+            <hr class="my-5">
+
+            <div class="comment-section">
+                <h4 class="fw-bold mb-4"><i class="fas fa-comments text-primary me-2"></i> Komentar ({{ daftar_komentar.count }})</h4>
+
+                <div class="card border-0 shadow-sm mb-5" style="border-radius: 15px; background-color: #f8f9fa;">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">Tinggalkan Komentar</h6>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ form.nama_pengguna }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.isi_komentar }}
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill fw-bold">
+                                <i class="fas fa-paper-plane me-2"></i>Kirim Komentar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {% for k in daftar_komentar %}
+                <div class="d-flex mb-4">
+                    <div class="flex-shrink-0">
+                        <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-secondary"></i>
+                        </div>
+                    </div>
+                    <div class="ms-3 bg-white p-3 shadow-sm border w-100" style="border-radius: 0 15px 15px 15px;">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="fw-bold mb-0 text-primary">{{ k.nama_pengguna }}</h6>
+                            <small class="text-muted">{{ k.tanggal_dibuat|timesince }} yang lalu</small>
+                        </div>
+                        <p class="mb-0 text-dark">{{ k.isi_komentar }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted italic">Belum ada komentar. Jadilah yang pertama berkomentar!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="alert alert-info border-0 shadow-sm p-4" style="border-radius: 15px;">
+                <h5 class="fw-bold"><i class="fas fa-lightbulb me-2"></i>Informasi</h5>
+                <p class="small mb-0">Baca berita terkait lainnya di kategori <strong>{{ berita.kategori.nama }}</strong> untuk mendapatkan informasi lebih mendalam.</p>
+            </div>
+        </div>
+
     </div>
-
-    <hr>
-    </body>
-</html>
+</div>
+{% endblock %}

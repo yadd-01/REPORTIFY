@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}REPORT.hub{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+        .navbar { background-color:#2b50d8 !important; }
+        .card { transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+        .sticky-sidebar { position: sticky; top: 20px; }
+        
+        /* Efek Trending */
+        .trending-link { transition: color 0.2s ease; }
+        .trending-link:hover { color: #dc3545 !important; text-decoration: underline !important; }
+        .trending-container { overflow-x: auto; scrollbar-width: none; }
+        .trending-container::-webkit-scrollbar { display: none; }
+
+        /* Efek Footer */
+        .transition-hover { transition: transform 0.2s, color 0.2s; display: inline-block; }
+        .transition-hover:hover { color: #dc3545 !important; transform: translateY(-3px); }
+        .hover-red:hover { color: #dc3545 !important; text-decoration: underline !important; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark py-3 mb-0 shadow-sm sticky-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <a class="navbar-brand fw-bold fs-3 text-white" href="/">
+                <span class="text-danger">R</span>EPORT.hub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto fw-bold align-items-center">
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'beranda' %}">Home</a></li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="kategoriDropdown" role="button" data-bs-toggle="dropdown">
+                            Kategori Berita
+                        </a>
+                        <ul class="dropdown-menu shadow border-0">
+                            {% for kat in daftar_kategori %}
+                                <li><a class="dropdown-item fw-bold text-dark" href="{% url 'beranda' %}?kategori={{ kat.nama }}">{{ kat.nama }}</a></li>
+                            {% empty %}
+                                <li><a class="dropdown-item text-muted" href="#">Belum ada kategori</a></li>
+                            {% endfor %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-primary fw-bold" href="{% url 'beranda' %}">Tampilkan Semua</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item ms-lg-3 my-2 my-lg-0">
+                        <form action="{% url 'beranda' %}" method="GET" class="d-flex">
+                            <input class="form-control rounded-pill bg-light border-0 px-3" type="search" placeholder="Cari berita..." name="q" value="{{ request.GET.q }}">
+                            <button class="btn btn-warning rounded-pill ms-2 fw-bold" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown ms-lg-3">
+                        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                             <div class="bg-danger rounded-circle d-inline-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li><a class="dropdown-item" href="/admin" target="_blank">Admin Panel</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger">Keluar</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-outline-light rounded-pill px-4" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i> Masuk
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="bg-white border-bottom shadow-sm mb-4 trending-wrapper">
+        <div class="container-fluid px-4 px-lg-5 py-2 d-flex align-items-center trending-container">
+            <span class="badge bg-danger rounded-pill me-3 px-3 py-2 fw-bold d-flex align-items-center" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                <i class="fas fa-fire me-2"></i> TRENDING
+            </span>
+            <div class="d-flex align-items-center gap-3 fw-semibold flex-nowrap" style="font-size: 0.95rem;">
+                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Perang Iran</a>
+                <span class="text-muted small">•</span>
+                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Makan Bergizi Gratis</a>
+                <span class="text-muted small">•</span>
+                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Timnas U-23</a>
+                <span class="text-muted small">•</span>
+                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Pilkada Serentak 2024</a>
+                <span class="text-muted small">•</span>
+                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Rupiah Melemah</a>
+            </div>
+        </div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <footer style="background-color: #0f172a;" class="text-white pt-5 pb-4 mt-5 w-100">
+        <div class="container-fluid px-4 px-lg-5">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center text-md-start mb-4 mb-md-0">
+                    <a href="/" class="text-decoration-none">
+                        <h2 class="fw-bold text-white mb-0" style="letter-spacing: 1px; font-size: 2.5rem;">
+                            <span class="text-danger">R</span>EPORT.hub
+                        </h2>
+                    </a>
+                </div>
+                <div class="col-md-4 text-center mb-4 mb-md-0">
+                    <div class="mb-3 d-flex flex-wrap justify-content-center gap-4">
+                        <a href="#" class="text-white text-decoration-none hover-red fw-semibold">Tentang Kami</a>
+                        <a href="#" class="text-white text-decoration-none hover-red fw-semibold">Tim</a>
+                        <a href="#" class="text-white text-decoration-none hover-red fw-semibold">Kebijakan</a>
+                    </div>
+                    <p class="text-secondary mb-0" style="font-size: 1rem; opacity: 0.8;">
+                        Copyright &copy; 2026 REPORT.hub. All right reserved
+                    </p>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <h5 class="fw-bold mb-3">Connect with us</h5>
+                    <div class="d-flex justify-content-center justify-content-md-end gap-4">
+                        <a href="#" class="text-white transition-hover"><i class="fab fa-youtube fa-2x"></i></a>
+                        <a href="#" class="text-white transition-hover"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="#" class="text-white transition-hover"><i class="fab fa-whatsapp fa-2x"></i></a>
+                        <a href="#" class="text-white transition-hover"><i class="fab fa-twitter fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

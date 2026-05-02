@@ -27,11 +27,12 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark py-3 mb-0 shadow-sm sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark py-3 mb-4 shadow-sm sticky-top">
         <div class="container-fluid px-4 px-lg-5">
             <a class="navbar-brand fw-bold fs-3 text-white" href="/">
                 <span class="text-danger">R</span>EPORT.hub
             </a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -41,10 +42,10 @@
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'beranda' %}">Home</a></li>
                     
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" id="kategoriDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="kategoriDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Kategori Berita
                         </a>
-                        <ul class="dropdown-menu shadow border-0">
+                        <ul class="dropdown-menu shadow border-0" aria-labelledby="kategoriDropdown">
                             {% for kat in daftar_kategori %}
                                 <li><a class="dropdown-item fw-bold text-dark" href="{% url 'beranda' %}?kategori={{ kat.nama }}">{{ kat.nama }}</a></li>
                             {% empty %}
@@ -57,7 +58,7 @@
                     
                     <li class="nav-item ms-lg-3 my-2 my-lg-0">
                         <form action="{% url 'beranda' %}" method="GET" class="d-flex">
-                            <input class="form-control rounded-pill bg-light border-0 px-3" type="search" placeholder="Cari berita..." name="q" value="{{ request.GET.q }}">
+                            <input class="form-control rounded-pill bg-light border-0 px-3" type="search" placeholder="Cari berita..." name="q" value="{{ request.GET.q|default:'' }}">
                             <button class="btn btn-warning rounded-pill ms-2 fw-bold" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -65,31 +66,35 @@
                     </li>
 
                     {% if user.is_authenticated %}
-                    <li class="nav-item dropdown ms-lg-3">
-                        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
-                             <div class="bg-danger rounded-circle d-inline-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">
-                                {{ user.username|slice:":1"|upper }}
-                            </div>
-                            {{ user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                            <li><a class="dropdown-item" href="/admin" target="_blank">Admin Panel</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form action="{% url 'logout' %}" method="post" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item text-danger">Keluar</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="nav-item dropdown ms-lg-3">
+                            <a class="nav-link dropdown-toggle text-white fw-bold d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <div class="bg-danger rounded-circle d-inline-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    {{ user.username|slice:":1"|upper }}
+                                </div>
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                {% if user.is_staff %}
+                                    <li><a class="dropdown-item" href="/admin" target="_blank"><i class="fas fa-user-shield me-2"></i> Panel Admin</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                <li>
+                                    <form action="{% url 'account_logout' %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-2"></i> Keluar</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     {% else %}
-                    <li class="nav-item ms-lg-3">
-                        <a class="btn btn-outline-light rounded-pill px-4" href="{% url 'login' %}">
-                            <i class="fas fa-sign-in-alt me-2"></i> Masuk
-                        </a>
-                    </li>
+                        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                            <a class="nav-link text-white fw-bold" href="{% url 'account_login' %}">Masuk</a>
+                        </li>
+                        <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                            <a class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" href="{% url 'account_signup' %}">Daftar</a>
+                        </li>
                     {% endif %}
+                    
                 </ul>
             </div>
         </div>
@@ -112,6 +117,17 @@
                 <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Rupiah Melemah</a>
             </div>
         </div>
+    </div>
+
+    <div class="container-fluid px-4 px-lg-5">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 
     {% block content %}{% endblock %}

@@ -3,10 +3,16 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 import requests
 
+# Import untuk kebutuhan API
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-# TAMBAHKAN Kategori DI IMPORT INI
+# Import untuk kebutuhan Autentikasi (Login & Register)
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.contrib import messages
+
+# Import Models & Forms lokal
 from .models import Artikel, Komentar, Kategori
 from .serializers import ArtikelSerializer
 from .forms import KomentarForm
@@ -75,6 +81,9 @@ def detail_berita(request, artikel_id):
         if form.is_valid():
             komentar_baru = form.save(commit=False)
             komentar_baru.artikel = artikel
+            # Jika user login, otomatis gunakan namanya
+            if request.user.is_authenticated and not komentar_baru.nama:
+                komentar_baru.nama = request.user.username
             komentar_baru.save()
             return redirect('detail_berita', artikel_id=artikel.id)
     else:
@@ -87,3 +96,16 @@ def detail_berita(request, artikel_id):
         'daftar_kategori': daftar_kategori, # Kirim ke template
     }
     return render(request, 'detail_berita.html', context)
+
+# 5. Fungsi untuk Pendaftaran Akun Baru
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user) # Otomatis login setelah berhasil daftar
+            messages.success(request, f"Selamat datang, {user.username}! Akun Anda berhasil dibuat.")
+            return redirect('beranda')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})

@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,10 +40,22 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites", # WAJIB ditambahkan untuk allauth
+    
+    # Aplikasi Anda
     'rest_framework',
     'news',           
     'ai_tools',
+    
+    # Library Allauth untuk Login Google
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', 
 ]
+
+# ID Situs (Wajib untuk django.contrib.sites dan allauth)
+SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -50,6 +65,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
+    # Middleware tambahan wajib dari allauth
+    "allauth.account.middleware.AccountMiddleware", 
 ]
 
 ROOT_URLCONF = "inti_proyek.urls"
@@ -117,8 +135,51 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Pengaturan Redirect
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+
+# ==========================================
+# PENGATURAN LOGIN GOOGLE (DJANGO-ALLAUTH)
+# ==========================================
+AUTHENTICATION_BACKENDS = [
+    # Dibutuhkan untuk login by username di Django admin, dsb
+    'django.contrib.auth.backends.ModelBackend',
+    # Metode autentikasi khusus allauth (seperti email/google)
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Konfigurasi Alur Registrasi
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+SOCIALACCOUNT_LOGIN_ON_GET = True # Langsung proses login saat link diklik (tidak perlu halaman konfirmasi)
+
+ACCOUNT_EMAIL_VERIFICATION = 'none' # Matikan pengiriman email konfirmasi (karena kita di localhost)
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+# Kredensial Google Cloud
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+            'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'EMAIL_AUTHENTICATION': True,
+        'EMAIL_AUTHENTICATION_AUTO_CONNECT': True,
+    }
+}

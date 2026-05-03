@@ -141,7 +141,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Pengaturan Redirect
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/admin-panel/'
 LOGOUT_REDIRECT_URL = '/'
 
 

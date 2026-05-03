@@ -1,0 +1,149 @@
+{% extends 'admin_base.html' %}
+{% block title %}News Management - REPORT.hub Admin{% endblock %}
+{% block nav_news %}active{% endblock %}
+
+{% block extra_style %}
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.filter-select {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 9px;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+.filter-select:focus { outline: none; border-color: var(--border-active); }
+{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in d-flex align-items-start justify-content-between">
+    <div>
+        <h1 class="page-title">News Management</h1>
+        <p class="page-subtitle">Kelola semua artikel — buat, edit, dan hapus konten.</p>
+    </div>
+    <a href="{% url 'admin_article_create' %}" class="btn-admin-primary">
+        <i class="fas fa-plus"></i> Buat Artikel Baru
+    </a>
+</div>
+
+<!-- FILTER BAR -->
+<div class="card-admin mb-4 fade-in delay-1">
+    <div class="card-body-admin">
+        <form method="GET" class="filter-bar">
+            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Cari judul artikel..."
+                style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); border-radius:9px; padding:8px 14px; font-size:0.8rem; flex:1; min-width:200px; font-family:'DM Sans',sans-serif;">
+            <select name="kategori" class="filter-select">
+                <option value="">Semua Kategori</option>
+                {% for kat in daftar_kategori %}
+                <option value="{{ kat.id }}" {% if request.GET.kategori == kat.id|stringformat:"s" %}selected{% endif %}>
+                    {{ kat.nama }}
+                </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-admin-primary">
+                <i class="fas fa-search"></i> Filter
+            </button>
+            {% if request.GET.q or request.GET.kategori %}
+            <a href="{% url 'admin_news' %}" class="btn-icon" style="width:auto; padding:0 14px; font-size:0.8rem; height:36px;">
+                <i class="fas fa-times me-1"></i> Reset
+            </a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="card-admin fade-in delay-2">
+    <div class="card-header-admin">
+        <div style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">
+            Semua Artikel <span style="font-size:0.8rem; color:var(--text-muted); font-weight:400; margin-left:8px;">({{ page_obj.paginator.count }} total)</span>
+        </div>
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Thumbnail</th>
+                    <th>Judul Artikel</th>
+                    <th>Kategori</th>
+                    <th>Tanggal Publikasi</th>
+                    <th>Komentar</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artikel in page_obj %}
+                <tr>
+                    <td style="color:var(--text-muted); font-size:0.75rem;">{{ forloop.counter }}</td>
+                    <td>
+                        {% if artikel.gambar_cover %}
+                            <img src="{{ artikel.gambar_cover.url }}" style="width:56px; height:40px; border-radius:6px; object-fit:cover;" alt="">
+                        {% else %}
+                            <div style="width:56px; height:40px; border-radius:6px; background:var(--bg-card-hover); display:flex; align-items:center; justify-content:center;">
+                                <i class="fas fa-image" style="color:var(--text-muted); font-size:0.7rem;"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td style="min-width:200px;">
+                        <div style="font-weight:600; color:#fff; font-size:0.875rem;">{{ artikel.judul|truncatewords:8 }}</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">{{ artikel.konten|truncatewords:10 }}</div>
+                    </td>
+                    <td>
+                        <span style="background:rgba(59,110,248,0.12); color:#818cf8; border-radius:6px; padding:3px 9px; font-size:0.72rem; font-weight:600;">
+                            {{ artikel.kategori.nama }}
+                        </span>
+                    </td>
+                    <td style="color:var(--text-muted); font-size:0.78rem; white-space:nowrap;">
+                        <i class="far fa-calendar me-1"></i>{{ artikel.tanggal_publikasi|date:"d M Y" }}
+                    </td>
+                    <td style="color:var(--text-muted); font-size:0.82rem; text-align:center;">
+                        <i class="far fa-comment me-1"></i>{{ artikel.komentar.count }}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'detail_berita' artikel.id %}" class="btn-icon" title="Lihat" target="_blank"><i class="fas fa-eye"></i></a>
+                            <a href="{% url 'admin_article_edit' artikel.id %}" class="btn-icon" title="Edit"><i class="fas fa-pen"></i></a>
+                            <a href="{% url 'admin_article_delete' artikel.id %}" class="btn-icon danger" title="Hapus"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align:center; padding:50px; color:var(--text-muted);">
+                        <i class="fas fa-newspaper fa-2x mb-3 d-block"></i>
+                        {% if request.GET.q %}Tidak ada artikel dengan kata kunci "{{ request.GET.q }}"{% else %}Belum ada artikel.{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINATION -->
+    {% if page_obj.has_other_pages %}
+    <div style="padding:16px 24px; border-top:1px solid var(--border-color); display:flex; justify-content:center; gap:6px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn-icon" style="width:auto; padding:0 14px; height:32px; font-size:0.78rem; gap:4px;">
+            <i class="fas fa-chevron-left"></i> Prev
+        </a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        <a href="?page={{ num }}" class="btn-icon" style="width:32px; height:32px; {% if page_obj.number == num %}background:var(--accent-blue); color:#fff; border-color:var(--accent-blue);{% endif %}">{{ num }}</a>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn-icon" style="width:auto; padding:0 14px; height:32px; font-size:0.78rem; gap:4px;">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

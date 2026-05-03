@@ -5,12 +5,16 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('news.urls')), # Menyambungkan rute dari app news
     
-    # URL untuk Allauth (Menggantikan login bawaan Django & menangani Google Login)
+    # Rute aplikasi utama
+    path('', include('news.urls')), 
+    
+    # Rute Allauth
     path('accounts/', include('allauth.urls')),
+    
+    # 💡 TAMBAHKAN BARIS INI: Menyambungkan semua rute admin kustom
+    path('admin-panel/', include('news.admin_urls')), 
 ]
 
-# Tambahan agar gambar bisa tampil saat tahap pengembangan (server lokal)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

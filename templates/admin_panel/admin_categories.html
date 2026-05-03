@@ -1,0 +1,108 @@
+{% extends 'admin_base.html' %}
+{% block title %}Categories - REPORT.hub Admin{% endblock %}
+{% block nav_categories %}active{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in d-flex align-items-start justify-content-between">
+    <div>
+        <h1 class="page-title">Categories</h1>
+        <p class="page-subtitle">Kelola semua kategori berita yang tersedia.</p>
+    </div>
+    <a href="{% url 'admin_category_create' %}" class="btn-admin-primary">
+        <i class="fas fa-plus"></i> Tambah Kategori
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Category List -->
+    <div class="col-lg-7 fade-in delay-1">
+        <div class="card-admin">
+            <div class="card-header-admin">
+                <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">
+                    Semua Kategori <span style="color:var(--text-muted); font-weight:400; font-size:0.85rem;">({{ daftar_kategori|length }})</span>
+                </span>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama Kategori</th>
+                        <th>Jumlah Artikel</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for kat in daftar_kategori %}
+                    <tr>
+                        <td style="color:var(--text-muted); font-size:0.75rem;">{{ forloop.counter }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <span style="width:10px; height:10px; border-radius:50%; background:
+                                    {% if forloop.counter == 1 %}#3b6ef8
+                                    {% elif forloop.counter == 2 %}#22c55e
+                                    {% elif forloop.counter == 3 %}#eab308
+                                    {% elif forloop.counter == 4 %}#ef4444
+                                    {% else %}#a855f7{% endif %}; flex-shrink:0;"></span>
+                                <span style="font-weight:600; color:#fff; font-size:0.875rem;">{{ kat.nama }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="background:rgba(59,110,248,0.1); color:#818cf8; border-radius:6px; padding:3px 10px; font-size:0.75rem;">
+                                {{ kat.artikel_set.count }} artikel
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a href="{% url 'admin_category_edit' kat.id %}" class="btn-icon"><i class="fas fa-pen"></i></a>
+                                <a href="{% url 'admin_category_delete' kat.id %}" class="btn-icon danger"><i class="fas fa-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding:40px; color:var(--text-muted);">
+                            Belum ada kategori.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Form -->
+    <div class="col-lg-5 fade-in delay-2">
+        <div class="card-admin">
+            <div class="card-header-admin">
+                <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">
+                    {% if edit_kat %}Edit Kategori{% else %}Tambah Kategori Baru{% endif %}
+                </span>
+            </div>
+            <div class="card-body-admin">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div style="margin-bottom:16px;">
+                        <label style="font-size:0.72rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:8px;">Nama Kategori</label>
+                        <input type="text" name="nama" value="{{ edit_kat.nama|default:'' }}"
+                               placeholder="Contoh: Teknologi, Olahraga, Bisnis..."
+                               style="width:100%; background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); border-radius:10px; padding:11px 16px; font-size:0.875rem; font-family:'DM Sans',sans-serif; transition:border-color 0.2s;"
+                               onfocus="this.style.borderColor='var(--border-active)'"
+                               onblur="this.style.borderColor='var(--border-color)'">
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button type="submit" class="btn-admin-primary">
+                            <i class="fas fa-save"></i>
+                            {% if edit_kat %}Simpan{% else %}Tambahkan{% endif %}
+                        </button>
+                        {% if edit_kat %}
+                        <a href="{% url 'admin_categories' %}" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;border:1px solid var(--border-color);color:var(--text-secondary);font-size:0.8rem;text-decoration:none;">
+                            Batal
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

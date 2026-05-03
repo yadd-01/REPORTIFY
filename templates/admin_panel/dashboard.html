@@ -1,0 +1,479 @@
+{% extends 'admin_base.html' %}
+{% block title %}Executive Dashboard - REPORT.hub Admin{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_style %}
+.stat-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    margin-bottom: 14px;
+}
+.stat-change {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+.stat-change.up { background: rgba(34,197,94,0.12); color: #22c55e; }
+.stat-change.live { background: rgba(249,115,22,0.12); color: #f97316; }
+.stat-change.new { background: rgba(59,110,248,0.12); color: #3b6ef8; }
+.stat-change.success { background: rgba(168,85,247,0.12); color: #a855f7; }
+.stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+.stat-label { color: var(--text-secondary); font-size: 0.82rem; margin-top: 4px; }
+
+/* thumbnail */
+.news-thumb {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--bg-card-hover);
+}
+.news-thumb-placeholder {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1e2235, #2a2f45);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* Category dot */
+.cat-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* AI status bar */
+.token-bar-bg {
+    height: 6px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.07);
+    overflow: hidden;
+    margin-top: 10px;
+}
+.token-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent-blue), #6366f1);
+    transition: width 1s ease;
+}
+
+/* chart bars */
+.vel-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 80px;
+    padding: 0 4px;
+}
+.vel-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.vel-bar {
+    width: 100%;
+    border-radius: 6px 6px 2px 2px;
+    background: rgba(59,110,248,0.25);
+    transition: height 0.8s ease;
+    min-height: 4px;
+}
+.vel-bar.today { background: linear-gradient(180deg, #3b6ef8, #6366f1); }
+.vel-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.5px; }
+.vel-label.today { color: var(--accent-orange); font-weight: 600; }
+
+/* AI Summary card */
+.ai-response-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-top: 12px;
+}
+
+.ai-meta-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 14px;
+}
+.ai-meta-item { flex: 1; }
+.ai-meta-label { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
+.ai-meta-value { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: #fff; margin-top: 3px; }
+
+.healthy-badge {
+    background: rgba(34,197,94,0.15);
+    color: var(--accent-green);
+    border: 1px solid rgba(34,197,94,0.25);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in">
+    <h1 class="page-title">Executive Dashboard</h1>
+    <p class="page-subtitle">Real-time analytical overview of the editorial ecosystem.</p>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-6 col-xl-3 fade-in delay-1">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(59,110,248,0.12);">
+                <i class="fas fa-newspaper" style="color: var(--accent-blue);"></i>
+            </div>
+            <div class="stat-change up">+{{ news_growth|default:"0" }}% vs last week</div>
+            <div class="stat-value">{{ total_news|default:"0" }}</div>
+            <div class="stat-label">Total News</div>
+        </div>
+    </div>
+
+    <div class="col-6 col-xl-3 fade-in delay-2">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(99,102,241,0.12);">
+                <i class="fas fa-users" style="color: #818cf8;"></i>
+            </div>
+            <div class="stat-change new">+{{ new_users|default:"0" }} new</div>
+            <div class="stat-value">{{ total_users|default:"0" }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+    </div>
+
+    <div class="col-6 col-xl-3 fade-in delay-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(249,115,22,0.12);">
+                <i class="fas fa-bolt" style="color: var(--accent-orange);"></i>
+            </div>
+            <div class="stat-change live">
+                <span style="display:inline-block; width:6px; height:6px; background: var(--accent-orange); border-radius:50%; margin-right:4px; animation: pulse 1.5s infinite;"></span>
+                Live Now
+            </div>
+            <div class="stat-value">{{ news_today|default:"0" }}</div>
+            <div class="stat-label">News Today</div>
+        </div>
+    </div>
+
+    <div class="col-6 col-xl-3 fade-in delay-4">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(168,85,247,0.12);">
+                <i class="fas fa-robot" style="color: #a855f7;"></i>
+            </div>
+            <div class="stat-change success">98% Success</div>
+            <div class="stat-value">{{ ai_used|default:"0" }}</div>
+            <div class="stat-label">AI Summary Used</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-lg-8 fade-in delay-2">
+        <div class="card-admin h-100">
+            <div class="card-header-admin">
+                <div>
+                    <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Recent News Operations</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">{{ recent_news|length }} latest articles</div>
+                </div>
+                <a href="{% url 'admin_article_create' %}" class="btn-admin-primary">
+                    <i class="fas fa-plus"></i> Create New Article
+                </a>
+            </div>
+            <div class="card-body-admin p-0">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Thumbnail</th>
+                            <th>News Title</th>
+                            <th>Category</th>
+                            <th>Author</th> <th>Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for artikel in recent_news %}
+                        <tr>
+                            <td>
+                                {% if artikel.gambar_cover %}
+                                    <img src="{{ artikel.gambar_cover.url }}" class="news-thumb" alt="">
+                                {% else %}
+                                    <div class="news-thumb-placeholder"><i class="fas fa-image"></i></div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="font-weight:600; color:#fff; font-size:0.85rem;">{{ artikel.judul|truncatewords:5 }}</div>
+                            </td>
+                            <td>
+                                <span style="font-size:0.78rem; color:var(--text-muted);">{{ artikel.kategori.nama }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:24px; height:24px; border-radius:50%; background:var(--bg-secondary); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:var(--text-muted);">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <span style="color: var(--accent-blue); font-weight: 600; font-size: 0.8rem;">
+                                        {{ artikel.penulis.username|default:"System" }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td style="color:var(--text-muted); font-size:0.78rem; white-space:nowrap;">
+                                {{ artikel.tanggal_publikasi|date:"d M Y" }}
+                            </td>
+                            <td>
+                                <span class="badge-published">PUBLISHED</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'admin_article_edit' artikel.id %}" class="btn-icon" title="Edit">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a href="{% url 'admin_article_delete' artikel.id %}" class="btn-icon danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">
+                                <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
+                                Belum ada artikel. <a href="{% url 'admin_article_create' %}" style="color:var(--accent-blue);">Buat sekarang</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 fade-in delay-3">
+
+        <div class="card-admin mb-4">
+            <div class="card-header-admin">
+                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Categories</div>
+                <a href="{% url 'admin_categories' %}" class="btn-icon" title="Add Category">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+            <div class="card-body-admin" style="padding: 12px 16px;">
+                {% for kat in daftar_kategori %}
+                <div class="d-flex align-items-center justify-content-between py-2" style="border-bottom: 1px solid var(--border-color);">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="cat-dot" style="background:
+                            {% if forloop.counter == 1 %}#3b6ef8
+                            {% elif forloop.counter == 2 %}#22c55e
+                            {% elif forloop.counter == 3 %}#eab308
+                            {% elif forloop.counter == 4 %}#ef4444
+                            {% else %}#a855f7{% endif %};"></span>
+                        <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">{{ kat.nama }}</span>
+                    </div>
+                    <div class="d-flex gap-1">
+                        <a href="{% url 'admin_category_edit' kat.id %}" class="btn-icon"><i class="fas fa-pen" style="font-size:0.6rem;"></i></a>
+                        <a href="{% url 'admin_category_delete' kat.id %}" class="btn-icon danger"><i class="fas fa-trash" style="font-size:0.6rem;"></i></a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:var(--text-muted); font-size:0.8rem; padding:8px 0;">Belum ada kategori.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card-admin mb-4" style="background: linear-gradient(135deg, #0f1628, #141830);">
+            <div class="card-body-admin">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div style="width:28px; height:28px; background: rgba(59,110,248,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fas fa-robot" style="color:var(--accent-blue); font-size:0.75rem;"></i>
+                    </div>
+                    <span style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; color:#fff;">AI Status</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="font-size:0.78rem; color:var(--text-muted);">Tokens Remaining</span>
+                    <span style="font-size:0.8rem; font-weight:600; color:var(--text-primary);">{{ ai_tokens_used|default:"0" }}K / 5M</span>
+                </div>
+                <div class="token-bar-bg">
+                    <div class="token-bar-fill" style="width: {{ ai_token_percent|default:0 }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-admin">
+            <div class="card-header-admin d-flex justify-content-between align-items-center">
+                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Recent Logins</div>
+                <a href="{% url 'admin_users' %}" style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;">View All</a>
+            </div>
+            <div class="card-body-admin p-0">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Last Login</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in recent_users %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:28px; height:28px; border-radius:50%; background:var(--accent-blue); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:0.7rem;">
+                                        {{ u.username|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <div style="font-weight:600; color:#fff; font-size:0.8rem;">{{ u.username }}</div>
+                                        <div style="font-size:0.65rem; color:var(--text-muted);">{{ u.email|default:"No Email" }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if u.is_superuser %}
+                                <span style="background:rgba(249,115,22,0.1); color:#f97316; font-size:0.6rem; padding: 3px 6px; border-radius: 4px; font-weight:600;">ADMIN</span>
+                                {% else %}
+                                <span style="background:rgba(59,110,248,0.1); color:#3b6ef8; font-size:0.6rem; padding: 3px 6px; border-radius: 4px; font-weight:600;">USER</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-size:0.75rem; color:var(--text-muted);">
+                                {{ u.last_login|date:"d M, H:i"|default:"Never" }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">
+                                No recent logins.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-6 fade-in delay-2">
+        <div class="card-admin h-100">
+            <div class="card-header-admin">
+                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">
+                    <i class="fas fa-robot me-2" style="color:var(--accent-blue);"></i>AI Summary Engine
+                </div>
+                <span class="healthy-badge">Healthy</span>
+            </div>
+            <div class="card-body-admin">
+                <div class="ai-meta-row">
+                    <div class="ai-meta-item">
+                        <div class="ai-meta-label">Last Prompt</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary); font-style:italic; margin-top:6px; line-height:1.5;">
+                            "{{ last_prompt|default:'Summarize the latest technology news from today...' }}"
+                        </div>
+                    </div>
+                    <div class="ai-meta-item" style="max-width:140px; text-align:right;">
+                        <div class="ai-meta-label">Token Usage (24h)</div>
+                        <div class="ai-meta-value">{{ token_24h|default:"0" }}</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted);">units</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px; margin-top:16px; margin-bottom:6px;">
+                    <i class="fas fa-terminal" style="color:var(--text-muted); font-size:0.7rem;"></i>
+                    <span style="font-size:0.65rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); font-weight:600;">Response Preview</span>
+                </div>
+                <div class="ai-response-box">
+                    {{ ai_last_response|default:"Belum ada ringkasan yang dibuat. Gunakan fitur AI Summary untuk menghasilkan ringkasan otomatis dari artikel terbaru." }}
+                </div>
+
+                <div style="margin-top:16px;">
+                    <a href="{% url 'admin_ai_summary' %}" class="btn-admin-primary" style="width:100%; justify-content:center;">
+                        <i class="fas fa-magic"></i> Buka AI Summary
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 fade-in delay-3">
+        <div class="card-admin h-100">
+            <div class="card-header-admin">
+                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Editorial Velocity</div>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Artikel per hari (7 hari terakhir)</span>
+            </div>
+            <div class="card-body-admin">
+                <div class="vel-bars" id="velBars">
+                    {% for day in velocity_data %}
+                    <div class="vel-bar-wrap">
+                        <div class="vel-bar {% if forloop.last %}today{% endif %}"
+                             style="height: 0px;"
+                             data-height="{{ day.height }}px">
+                        </div>
+                        <div class="vel-label {% if forloop.last %}today{% endif %}">{{ day.label }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div style="margin-top:20px; display:flex; gap:24px;">
+                    {% for day in velocity_data %}
+                    <div style="flex:1; text-align:center;">
+                        <div style="font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; color:{% if forloop.last %}var(--accent-orange){% else %}var(--text-primary){% endif %};">
+                            {{ day.count }}
+                        </div>
+                        <div style="font-size:0.62rem; color:var(--text-muted);">artikel</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <hr style="border-color:var(--border-color); margin:16px 0;">
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Total Minggu Ini</div>
+                        <div style="font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#fff;">{{ weekly_total }} artikel</div>
+                    </div>
+                    <a href="{% url 'admin_reports' %}" class="btn-admin-primary">
+                        <i class="fas fa-chart-line"></i> Full Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+// Animate velocity bars on load
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        document.querySelectorAll('.vel-bar').forEach(bar => {
+            bar.style.height = bar.dataset.height;
+        });
+    }, 300);
+});
+
+// Pulse animation for live dot
+const style = document.createElement('style');
+style.textContent = `
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+}`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

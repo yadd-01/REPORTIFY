@@ -1,0 +1,117 @@
+{% extends 'admin_base.html' %}
+{% block title %}Reports - REPORT.hub Admin{% endblock %}
+{% block nav_reports %}active{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in">
+    <h1 class="page-title">Reports</h1>
+    <p class="page-subtitle">Analitik mendalam aktivitas editorial REPORT.hub.</p>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4 fade-in delay-1">
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="padding:18px;">
+            <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Artikel Bulan Ini</div>
+            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_this_month }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="padding:18px;">
+            <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Total Kategori</div>
+            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ artikel_per_kat|length }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="padding:18px;">
+            <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Total Komentar</div>
+            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_comments }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="padding:18px;">
+            <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Artikel Minggu Ini</div>
+            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:var(--accent-green); margin-top:6px;">
+                {% with total=velocity|length %}
+                    {{ velocity|last }}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Artikel per Kategori -->
+    <div class="col-lg-5 fade-in delay-2">
+        <div class="card-admin h-100">
+            <div class="card-header-admin">
+                <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Artikel per Kategori</span>
+            </div>
+            <div class="card-body-admin">
+                {% for kat in artikel_per_kat %}
+                <div style="margin-bottom:16px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">{{ kat.nama }}</span>
+                        <span style="font-size:0.8rem; color:var(--text-muted);">{{ kat.jumlah }} artikel</span>
+                    </div>
+                    <div style="height:6px; border-radius:10px; background:rgba(255,255,255,0.06); overflow:hidden;">
+                        {% with max_count=artikel_per_kat.0.jumlah %}
+                        <div style="height:100%; border-radius:10px; background:
+                            {% if forloop.counter == 1 %}linear-gradient(90deg,#3b6ef8,#6366f1)
+                            {% elif forloop.counter == 2 %}linear-gradient(90deg,#22c55e,#16a34a)
+                            {% elif forloop.counter == 3 %}linear-gradient(90deg,#eab308,#ca8a04)
+                            {% elif forloop.counter == 4 %}linear-gradient(90deg,#ef4444,#dc2626)
+                            {% else %}linear-gradient(90deg,#a855f7,#9333ea){% endif %};
+                            width: {% if max_count > 0 %}{% widthratio kat.jumlah max_count 100 %}{% else %}0{% endif %}%;
+                            transition: width 1s ease;"></div>
+                        {% endwith %}
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:var(--text-muted);">Belum ada data.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Artikel dengan Komentar Terbanyak -->
+    <div class="col-lg-7 fade-in delay-3">
+        <div class="card-admin h-100">
+            <div class="card-header-admin">
+                <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Artikel Paling Banyak Komentar</span>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Artikel</th>
+                        <th>Kategori</th>
+                        <th>Komentar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for artikel in artikel_komentar %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'detail_berita' artikel.id %}" style="font-weight:600; color:#fff; font-size:0.875rem; text-decoration:none;" target="_blank">
+                                {{ artikel.judul|truncatewords:7 }}
+                            </a>
+                            <div style="font-size:0.72rem; color:var(--text-muted);">{{ artikel.tanggal_publikasi|date:"d M Y" }}</div>
+                        </td>
+                        <td>
+                            <span style="background:rgba(59,110,248,0.1); color:#818cf8; border-radius:6px; padding:3px 9px; font-size:0.72rem; font-weight:600;">{{ artikel.kategori.nama }}</span>
+                        </td>
+                        <td>
+                            <div style="font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; color:#fff;">{{ artikel.jumlah_komentar }}</div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align:center; padding:30px; color:var(--text-muted);">Belum ada data komentar.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends 'admin_base.html' %}
+{% block title %}{% if artikel %}Edit Artikel{% else %}Buat Artikel Baru{% endif %} - REPORT.hub Admin{% endblock %}
+{% block nav_news %}active{% endblock %}
+
+{% block extra_style %}
+.form-group { margin-bottom: 20px; }
+.form-label-admin {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
+}
+.form-input-admin {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-size: 0.875rem;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+}
+.form-input-admin:focus {
+    outline: none;
+    border-color: var(--border-active);
+    background: var(--bg-card-hover);
+}
+.form-input-admin::placeholder { color: var(--text-muted); }
+select.form-input-admin option { background: #1a1d27; }
+.form-input-admin.is-error { border-color: var(--accent-red); }
+.error-msg { color: var(--accent-red); font-size: 0.75rem; margin-top: 5px; }
+
+.image-preview {
+    width: 100%; max-height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-top: 10px;
+    display: none;
+}
+
+/* Penyesuaian agar border TinyMCE menyatu dengan tema gelap Anda */
+.tox-tinymce {
+    border-radius: 10px !important;
+    border: 1px solid var(--border-color) !important;
+}
+{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in d-flex align-items-center gap-3">
+    <a href="{% url 'admin_news' %}" class="btn-icon" style="width:36px; height:36px;">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <div>
+        <h1 class="page-title">{% if artikel %}Edit Artikel{% else %}Buat Artikel Baru{% endif %}</h1>
+        <p class="page-subtitle">{% if artikel %}Perbarui konten artikel yang sudah ada.{% else %}Tulis dan publikasikan artikel baru.{% endif %}</p>
+    </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-4">
+
+        <div class="col-lg-8 fade-in delay-1">
+            <div class="card-admin">
+                <div class="card-header-admin">
+                    <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Konten Artikel</span>
+                </div>
+                <div class="card-body-admin">
+
+                    <div class="form-group">
+                        <label class="form-label-admin">Judul Artikel *</label>
+                        <input type="text" name="judul" class="form-input-admin {% if form.judul.errors %}is-error{% endif %}"
+                               placeholder="Masukkan judul artikel yang menarik..."
+                               value="{{ form.judul.value|default:'' }}">
+                        {% if form.judul.errors %}
+                        <div class="error-msg">{{ form.judul.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label-admin">Konten / Isi Artikel *</label>
+                        <textarea id="editor" name="isi" placeholder="Tulis isi artikel di sini...">{{ form.isi.value|default:'' }}</textarea>
+                        {% if form.isi.errors %}
+                        <div class="error-msg">{{ form.isi.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 fade-in delay-2">
+
+            <div class="card-admin mb-4">
+                <div class="card-header-admin">
+                    <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Publikasi</span>
+                </div>
+                <div class="card-body-admin">
+                    <div class="form-group">
+                        <label class="form-label-admin">Kategori *</label>
+                        <select name="kategori" class="form-input-admin">
+                            <option value="">— Pilih Kategori —</option>
+                            {% for kat in daftar_kategori %}
+                            <option value="{{ kat.id }}" {% if form.kategori.value|stringformat:"s" == kat.id|stringformat:"s" %}selected{% endif %}>
+                                {{ kat.nama }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.kategori.errors %}
+                        <div class="error-msg">{{ form.kategori.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                        <button type="submit" class="btn-admin-primary" style="justify-content:center;">
+                            <i class="fas fa-paper-plane"></i>
+                            {% if artikel %}Simpan Perubahan{% else %}Publikasikan Sekarang{% endif %}
+                        </button>
+                        <a href="{% url 'admin_news' %}" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:9px; border-radius:9px; border:1px solid var(--border-color); color:var(--text-secondary); font-size:0.8rem; text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='var(--text-primary)';" onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-secondary)';">
+                            Batal
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-admin">
+                <div class="card-header-admin">
+                    <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Gambar Cover Utama</span>
+                </div>
+                <div class="card-body-admin">
+                    {% if artikel and artikel.gambar_cover %}
+                    <img src="{{ artikel.gambar_cover.url }}" style="width:100%; border-radius:10px; object-fit:cover; max-height:160px; margin-bottom:12px;" alt="Current Cover">
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Cover saat ini. Upload baru untuk mengganti.</div>
+                    {% endif %}
+
+                    <label for="gambar_cover" style="display:block; border:2px dashed var(--border-color); border-radius:10px; padding:20px; text-align:center; cursor:pointer; transition:border-color 0.2s;" id="dropZone">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:1.5rem; color:var(--text-muted); display:block; margin-bottom:8px;"></i>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Klik atau drag gambar ke sini</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">PNG, JPG, WEBP (maks. 5MB)</div>
+                    </label>
+                    <input type="file" name="gambar_cover" id="gambar_cover" accept="image/*" style="display:none;" onchange="previewImage(this)">
+                    <img id="imgPreview" class="image-preview" alt="Preview">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#editor', // Mengaitkan ke ID textarea
+        height: 600,         // Tinggi area penulisan
+        plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+        toolbar: 'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+        
+        // Pengaturan Tema & UI (Menyesuaikan warna panel admin)
+        skin: 'oxide-dark',
+        content_css: 'dark',
+        
+        // Pengaturan Gambar
+        image_title: true,
+        automatic_uploads: true,
+        paste_data_images: true, // Memungkinkan Copy-Paste gambar langsung!
+        
+        // Fungsi untuk mengunggah gambar secara lokal (tersimpan dalam bentuk Base64)
+        file_picker_callback: function (cb, value, meta) {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+
+            input.onchange = function () {
+                var file = this.files[0];
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    // Panggil fungsi callback agar gambar tampil di editor
+                    cb(blobInfo.blobUri(), { title: file.name });
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        },
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px; line-height: 1.6; } img { max-width: 100%; height: auto; }'
+    });
+
+    // SCRIPT UNTUK PREVIEW COVER GAMBAR
+    function previewImage(input) {
+        const preview = document.getElementById('imgPreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent-blue)'; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = 'var(--border-color)'; });
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--border-color)';
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            document.getElementById('gambar_cover').files = e.dataTransfer.files;
+            previewImage(document.getElementById('gambar_cover'));
+        }
+    });
+</script>
+{% endblock %}

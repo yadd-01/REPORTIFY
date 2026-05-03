@@ -1,0 +1,41 @@
+{% extends 'admin_base.html' %}
+{% block title %}Hapus Kategori - REPORT.hub Admin{% endblock %}
+{% block nav_categories %}active{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in d-flex align-items-center gap-3">
+    <a href="{% url 'admin_categories' %}" class="btn-icon" style="width:36px; height:36px;">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h1 class="page-title">Hapus Kategori</h1>
+</div>
+
+<div class="row justify-content-center fade-in delay-1">
+    <div class="col-lg-5">
+        <div class="card-admin" style="border-color:rgba(239,68,68,0.2);">
+            <div class="card-body-admin" style="text-align:center; padding:40px;">
+                <div style="width:60px; height:60px; background:rgba(239,68,68,0.12); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+                    <i class="fas fa-tags" style="color:var(--accent-red); font-size:1.3rem;"></i>
+                </div>
+                <h4 style="font-family:'Syne',sans-serif; color:#fff; margin-bottom:8px;">Hapus Kategori?</h4>
+                <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:6px;">
+                    Kategori "<strong style="color:var(--text-primary);">{{ kat.nama }}</strong>" memiliki 
+                    <strong style="color:var(--accent-red);">{{ kat.artikel_set.count }} artikel</strong>.
+                </p>
+                <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:24px;">
+                    Semua artikel dalam kategori ini juga akan terhapus.
+                </p>
+                <form method="POST" style="display:flex; gap:12px; justify-content:center;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:var(--accent-red); color:#fff; border:none; padding:10px 24px; border-radius:9px; font-size:0.875rem; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">
+                        <i class="fas fa-trash me-2"></i>Ya, Hapus
+                    </button>
+                    <a href="{% url 'admin_categories' %}" style="display:flex;align-items:center;gap:6px;padding:10px 20px;border-radius:9px;border:1px solid var(--border-color);color:var(--text-secondary);font-size:0.875rem;text-decoration:none;">
+                        Batal
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

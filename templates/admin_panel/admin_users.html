@@ -1,0 +1,106 @@
+{% extends 'admin_base.html' %}
+{% block title %}Users - REPORT.hub Admin{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in">
+    <h1 class="page-title">Users</h1>
+    <p class="page-subtitle">Pantau semua pengguna terdaftar di REPORT.hub.</p>
+</div>
+
+<div class="row g-3 mb-4 fade-in delay-1">
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="padding:16px;">
+            <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Total Users</div>
+            <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_users }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="padding:16px;">
+            <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Admin / Staff</div>
+            <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_staff }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="padding:16px;">
+            <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Regular Users</div>
+            <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_regular|default:"0" }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="padding:16px;">
+            <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Baru (7 hari)</div>
+            <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:var(--accent-green); margin-top:6px;">{{ new_users_week|default:"0" }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="card-admin fade-in delay-2">
+    <div class="card-header-admin">
+        <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Daftar Pengguna</span>
+        <form method="GET" style="display:flex; gap:8px;">
+            <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Cari username / email..."
+                style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); border-radius:9px; padding:7px 14px; font-size:0.8rem; font-family:'DM Sans',sans-serif; width:220px;"
+                onfocus="this.style.borderColor='var(--border-active)'" onblur="this.style.borderColor='var(--border-color)'">
+            <button type="submit" class="btn-admin-primary" style="padding:7px 14px;"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
+    <div style="overflow-x:auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Bergabung</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in daftar_user %}
+                <tr>
+                    <td style="color:var(--text-muted); font-size:0.75rem;">{{ forloop.counter }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width:32px; height:32px; background:linear-gradient(135deg, #3b6ef8, #6366f1); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; color:#fff; flex-shrink:0;">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div style="font-weight:600; color:#fff; font-size:0.875rem;">{{ user.username }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="color:var(--text-muted); font-size:0.82rem;">{{ user.email|default:"—" }}</td>
+                    <td style="color:var(--text-muted); font-size:0.78rem; white-space:nowrap;">
+                        {{ user.date_joined|date:"d M Y" }}
+                    </td>
+                    <td>
+                        {% if user.is_superuser %}
+                        <span style="background:rgba(249,115,22,0.12); color:var(--accent-orange); border:1px solid rgba(249,115,22,0.2); padding:3px 9px; border-radius:6px; font-size:0.7rem; font-weight:600;">SUPER ADMIN</span>
+                        {% elif user.is_staff %}
+                        <span style="background:rgba(59,110,248,0.12); color:#818cf8; border:1px solid rgba(59,110,248,0.2); padding:3px 9px; border-radius:6px; font-size:0.7rem; font-weight:600;">STAFF</span>
+                        {% else %}
+                        <span style="background:rgba(107,114,128,0.12); color:var(--text-muted); border:1px solid rgba(107,114,128,0.2); padding:3px 9px; border-radius:6px; font-size:0.7rem; font-weight:600;">USER</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_active %}
+                        <span class="badge-published">ACTIVE</span>
+                        {% else %}
+                        <span class="badge-draft">INACTIVE</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">
+                        Tidak ada user ditemukan.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

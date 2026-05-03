@@ -9,11 +9,12 @@ class Kategori(models.Model):
 
 class Artikel(models.Model):
     judul = models.CharField(max_length=255)
-    konten = models.TextField()
+    isi = models.TextField()  # Disinkronkan: sebelumnya 'konten'
     gambar_cover = models.ImageField(upload_to='berita/', null=True, blank=True)
-    # TYPO DIPERBAIKI PADA BARIS DI BAWAH INI: on_delete=models.CASCADE
     kategori = models.ForeignKey(Kategori, on_delete=models.CASCADE)
+    penulis = models.ForeignKey(User, on_delete=models.CASCADE) # Wajib untuk Dashboard
     tanggal_publikasi = models.DateTimeField(auto_now_add=True)
+    penulis = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.judul

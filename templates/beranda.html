@@ -104,17 +104,20 @@
             <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
                 <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center" style="border-radius: 15px 15px 0 0;">
                     <span><i class="fas fa-robot text-primary me-2"></i> Asisten AI</span>
-                    <span class="badge bg-warning text-dark">Coming Soon</span>
+                    <span class="badge bg-success text-white" id="status-ai">Online</span>
                 </div>
-                <div class="card-body p-4 bg-light" style="height: 300px; overflow-y: auto;">
+                
+                <div class="card-body p-4 bg-light" id="chat-box" style="height: 300px; overflow-y: auto;">
                     <div class="bg-white p-3 shadow-sm mb-3" style="border-radius: 0 15px 15px 15px; width: 85%;">
-                        Halo! Saya asisten berita AI. Saat ini saya sedang disiapkan oleh pengembang. Nantikan fitur canggih saya segera! 🚀
+                        Halo! Saya asisten berita AI untuk Report.Hub. Ada yang bisa saya bantu untuk merangkum atau mencari tren berita hari ini? 🚀
                     </div>
                 </div>
+                
                 <div class="card-footer bg-white border-0 p-3" style="border-radius: 0 0 15px 15px;">
                     <div class="input-group">
-                        <input type="text" class="form-control rounded-pill bg-light border-0 ps-3" placeholder="Ketik pertanyaan..." disabled>
-                        <button class="btn btn-primary rounded-circle ms-2" disabled><i class="fas fa-paper-plane"></i></button>
+                        <input type="text" id="chat-input" class="form-control rounded-pill bg-light border-0 ps-3" placeholder="Ketik pertanyaan..." >
+                        
+                        <button id="btn-kirim" class="btn btn-primary rounded-circle ms-2"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
             </div>

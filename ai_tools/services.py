@@ -7,7 +7,6 @@ def tanya_deepseek(prompt_user, system_instruction):
     """
     url = "https://api.deepseek.com/chat/completions"
     
-    # Memakai token aktif langsung dari file contoh dosen
     api_key = "sk-df07db4db82f4045ab245d78cf884cb8"
     
     headers = {
@@ -18,7 +17,6 @@ def tanya_deepseek(prompt_user, system_instruction):
     payload = {
         "model": "deepseek-chat",
         "messages": [
-            # Menggunakan instruksi sistem yang dikirim dari views.py
             {"role": "system", "content": system_instruction},
             {"role": "user", "content": prompt_user}
         ],

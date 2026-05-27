@@ -12,12 +12,11 @@ def api_tanya_ai(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            user_message = data.get("message", "") # Menangkap parameter "message" dari JS
+            user_message = data.get("message", "") 
             
             if not user_message:
                 return JsonResponse({"status": "error", "reply": "Pesan tidak boleh kosong"}, status=400)
             
-            # Kustomisasi instruksi agar sesuai dengan Report.Hub
             instruksi_sistem = (
                 "Kamu adalah Asisten AI resmi untuk portal berita bernama Report.Hub. "
                 "Tugas utamanya adalah menjawab pertanyaan seputar berita, membantu merangkum "
@@ -26,13 +25,13 @@ def api_tanya_ai(request):
                 "profesional, dan ringkas."
             )
             
-            # Panggil fungsi dari services.py dengan parameter yang sudah sesuai
+            # memanggil fungsi dari service.py
             jawaban_ai = tanya_deepseek(
                 prompt_user=user_message,
                 system_instruction=instruksi_sistem
             )
             
-            # Mengembalikan response sukses yang dinanti oleh JavaScript
+            # Mengembalikan response sukses
             return JsonResponse({"status": "success", "reply": jawaban_ai})
             
         except Exception as e:

@@ -1,36 +1,56 @@
 import requests
+import json
 
 def tanya_deepseek(prompt_user, system_instruction):
     """
-    Fungsi untuk mengirim pertanyaan ke DeepSeek API 
-    menggunakan konfigurasi token langsung dari dosen.
+    Fungsi versi final menggunakan Google Gemini API.
+    Format teks digabungkan langsung agar kompatibel 100% dengan endpoint v1 dan v1beta 
+    tanpa memicu eror 'Unknown name systemInstruction'.
     """
-    url = "https://api.deepseek.com/chat/completions"
-    
-    api_key = "sk-df07db4db82f4045ab245d78cf884cb8"
-    
+
+    GEMINI_API_KEY = "AIzaSyCA8gn7JX0cDHgXl4kMI1GhvsUBz0tCTEI"
+
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"        
     headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
     }
     
+
+    konteks_lengkap = (
+        f"Kamu adalah chatbot untuk aplikasi Report.Hub. Aturan karaktermu: {str(system_instruction)}\n"
+        f"ATURAN GAYA BICARA:\n"
+        f"1. JANGAN PERNAH gunakan kata sapaan seperti 'Halo!', 'Hai!', 'Selamat pagi/siang/malam' jika pengguna langsung bertanya atau melanjutkan percakapan.\n"
+        f"2. Langsung jawab pertanyaan pengguna ke inti masalah dengan padat, informatif, dan jelas.\n"
+        f"3. Jangan gunakan format Markdown seperti tanda bintang (** atau *).\n\n"
+        f"Pertanyaan pengguna: {str(prompt_user)}"
+    )
+    
     payload = {
-        "model": "deepseek-chat",
-        "messages": [
-            {"role": "system", "content": system_instruction},
-            {"role": "user", "content": prompt_user}
-        ],
-        "stream": False
+        "contents": [
+            {
+                "parts": [
+                    {
+                        "text": konteks_lengkap
+                    }
+                ]
+            }
+        ]
     }
     
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
         
         if response.status_code == 200:
             data = response.json()
-            return data["choices"][0]["message"]["content"]
+
+            jawaban_ai = data['candidates'][0]['content']['parts'][0]['text']
+            return jawaban_ai
         else:
-            return f"Error: Gagal mendapatkan respon dari server AI (Status {response.status_code})."
+            try:
+                pesan_eror = response.json().get('error', {}).get('message', 'Gagal mendapatkan jawaban.')
+                return f"Eror Sistem AI (Status {response.status_code}): {pesan_eror}"
+            except:
+                return f"Eror Sistem AI (Status {response.status_code}): Server Google menolak request."
             
-    except requests.exceptions.RequestException as e:
-        return f"Error Koneksi: {str(e)}"
+    except Exception as e:
+        return f"Koneksi terputus: {str(e)}"

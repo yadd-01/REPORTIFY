@@ -1,5 +1,9 @@
+import os
 import requests
 import json
+from dotenv import load_dotenv
+
+load_dotenv()  # Memuat variabel lingkungan dari file .env
 
 def tanya_deepseek(prompt_user, system_instruction):
     """
@@ -8,7 +12,7 @@ def tanya_deepseek(prompt_user, system_instruction):
     tanpa memicu eror 'Unknown name systemInstruction'.
     """
 
-    GEMINI_API_KEY = "AIzaSyCA8gn7JX0cDHgXl4kMI1GhvsUBz0tCTEI"
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"        
     headers = {

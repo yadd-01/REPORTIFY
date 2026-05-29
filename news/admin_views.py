@@ -31,15 +31,29 @@ def get_velocity_data():
 @login_required
 @staff_required
 def admin_dashboard(request):
+    chat_history = request.session.get('ai_summary_chat_history', [])
+    last_response = chat_history[-1]['ai'] if chat_history else None
+    last_prompt = chat_history[-1]['user'] if chat_history else None
+    today = timezone.now().date()
+    
     context = {
-        'total_articles': Artikel.objects.count(),
+        'total_news': Artikel.objects.count(),
         'total_users': User.objects.count(),
-        'recent_articles': Artikel.objects.order_by('-tanggal_publikasi')[:5],
-        'total_users': User.objects.count(),
+        'news_today': Artikel.objects.filter(tanggal_publikasi__date=today).count(),
+        'new_users': User.objects.filter(date_joined__gte=timezone.now() - timedelta(days=7)).count(),
+        'recent_news': Artikel.objects.order_by('-tanggal_publikasi')[:5],
         'recent_users': User.objects.all().order_by('-last_login')[:5],
-        'velocity': get_velocity_data(),
+        'velocity_data': get_velocity_data(),
         'weekly_total': Artikel.objects.filter(tanggal_publikasi__gte=timezone.now() - timedelta(days=7)).count(),
-        'kategori_stats': Kategori.objects.all(),
+        'daftar_kategori': Kategori.objects.all(),
+        
+        # AI Widget Stats
+        'ai_last_response': last_response,
+        'last_prompt': last_prompt,
+        'ai_used': len(chat_history),
+        'token_24h': len(chat_history) * 2,
+        'ai_tokens_used': len(chat_history) * 2,
+        'ai_token_percent': min(100, len(chat_history) * 1),
     }
     return render(request, 'admin_panel/dashboard.html', context)
 
@@ -200,4 +214,29 @@ def admin_reports(request):
 @login_required
 @staff_required
 def admin_ai_summary(request):
-    return render(request, 'admin_panel/admin_ai_summary.html')
+    from ai_tools.services import tanya_deepseek
+    
+    chat_history = request.session.get('ai_summary_chat_history', [])
+    
+    if request.method == 'POST':
+        prompt = request.POST.get('prompt')
+        if prompt:
+            instruksi = "Kamu adalah AI untuk Admin web berita REPORT.hub. Bantu meringkas artikel, membuat headline, atau menganalisis konten. Jawab secara ringkas, informatif, dan profesional tanpa basa-basi berlebih. Jangan gunakan Markdown yang tidak didukung."
+            jawaban = tanya_deepseek(prompt, instruksi)
+            chat_history.append({'user': prompt, 'ai': jawaban})
+            request.session['ai_summary_chat_history'] = chat_history
+            request.session.modified = True
+            
+    # Hapus chat history dari URL GET jika ada parameter clear
+    if request.GET.get('clear') == '1':
+        request.session['ai_summary_chat_history'] = []
+        return redirect('admin_ai_summary')
+        
+    context = {
+        'chat_history': chat_history,
+        'ai_tokens_used': len(chat_history) * 2,
+        'ai_token_percent': min(100, len(chat_history) * 1),
+        'total_requests': len(chat_history),
+        'token_24h': len(chat_history) * 2,
+    }
+    return render(request, 'admin_panel/admin_ai_summary.html', context)

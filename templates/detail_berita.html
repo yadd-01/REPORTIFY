@@ -27,8 +27,8 @@
                 <img src="{{ berita.gambar_cover.url }}" class="img-fluid w-100 mb-4 shadow-sm" style="border-radius: 20px; max-height: 500px; object-fit: cover;">
             {% endif %}
 
-            <div class="berita-content fs-5 text-dark mb-5" style="line-height: 1.8; text-align: justify;">
-                {{ berita.konten|linebreaks }}
+            <div class="berita-content ql-editor mb-5" style="line-height: 1.8; text-align: justify; padding: 0 !important; min-height: unset !important; color: #1e293b;">
+                {{ berita.isi|safe }}
             </div>
 
             <hr class="my-5">

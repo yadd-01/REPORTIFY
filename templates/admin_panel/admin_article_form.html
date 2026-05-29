@@ -1,4 +1,5 @@
 {% extends 'admin_base.html' %}
+{% load static %}
 {% block title %}{% if artikel %}Edit Artikel{% else %}Buat Artikel Baru{% endif %} - REPORT.hub Admin{% endblock %}
 {% block nav_news %}active{% endblock %}
 
@@ -13,6 +14,200 @@
     margin-bottom: 8px;
     display: block;
 }
+
+/* ===== QUILL EDITOR DARK THEME ===== */
+.editor-wrapper {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: #0d0f1a;
+    margin-top: 8px;
+    transition: border-color 0.25s;
+}
+.editor-wrapper:focus-within {
+    border-color: rgba(67, 97, 238, 0.6);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+}
+
+/* Toolbar */
+#quill-toolbar {
+    background: #13151e !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    padding: 8px 12px !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+}
+
+/* Toolbar buttons */
+#quill-toolbar .ql-formats {
+    margin-right: 8px;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    padding-right: 8px;
+}
+#quill-toolbar .ql-formats:last-child {
+    border-right: none;
+}
+#quill-toolbar button,
+#quill-toolbar .ql-picker-label {
+    color: #94a3b8 !important;
+    transition: color 0.15s, background 0.15s;
+    border-radius: 6px !important;
+    padding: 4px 5px !important;
+}
+#quill-toolbar button:hover,
+#quill-toolbar .ql-picker-label:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #e2e8f0 !important;
+}
+#quill-toolbar button.ql-active,
+#quill-toolbar .ql-picker-label.ql-active {
+    background: rgba(67, 97, 238, 0.2) !important;
+    color: #6d89f5 !important;
+}
+#quill-toolbar button svg,
+#quill-toolbar .ql-picker-label svg {
+    color: inherit !important;
+}
+#quill-toolbar .ql-stroke {
+    stroke: currentColor !important;
+}
+#quill-toolbar .ql-fill {
+    fill: currentColor !important;
+}
+
+/* Dropdown pickers */
+#quill-toolbar .ql-picker-options {
+    background: #1a1d2e !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+    padding: 4px !important;
+    z-index: 9999 !important;
+}
+#quill-toolbar .ql-picker-item {
+    color: #cbd5e1 !important;
+    border-radius: 5px !important;
+    padding: 5px 10px !important;
+}
+#quill-toolbar .ql-picker-item:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #ffffff !important;
+}
+#quill-toolbar .ql-picker-item.ql-selected {
+    color: #6d89f5 !important;
+    background: rgba(67, 97, 238, 0.15) !important;
+}
+
+/* Picker labels */
+#quill-toolbar .ql-picker {
+    color: #94a3b8 !important;
+}
+#quill-toolbar .ql-picker-label::before {
+    color: #94a3b8 !important;
+}
+
+/* Editing area */
+#quill-editor-area {
+    background: #0f1120 !important;
+    color: #d1d5e8 !important;
+    min-height: 600px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    padding: 40px 50px !important;
+    border: none !important;
+}
+#quill-editor-area:focus {
+    outline: none !important;
+}
+
+/* Content typography inside editor */
+#quill-editor-area h1 { font-size: 2rem; font-weight: 700; color: #ffffff; margin: 20px 0 10px; }
+#quill-editor-area h2 { font-size: 1.6rem; font-weight: 700; color: #e2e8f0; margin: 18px 0 8px; }
+#quill-editor-area h3 { font-size: 1.3rem; font-weight: 600; color: #cbd5e1; margin: 16px 0 6px; }
+#quill-editor-area p { margin: 0 0 10px; }
+#quill-editor-area strong { color: #ffffff; }
+#quill-editor-area em { color: #93c5fd; }
+#quill-editor-area a { color: #6d89f5; }
+#quill-editor-area blockquote {
+    border-left: 3px solid #4361ee;
+    margin: 12px 0;
+    padding: 8px 16px;
+    background: rgba(67, 97, 238, 0.08);
+    border-radius: 0 6px 6px 0;
+    color: #94a3b8;
+}
+#quill-editor-area pre {
+    background: #0d0f18;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: #7dd3fc;
+    font-family: 'Courier New', monospace;
+    overflow-x: auto;
+}
+#quill-editor-area table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+}
+#quill-editor-area td, #quill-editor-area th {
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 8px 12px;
+    color: #cbd5e1;
+}
+#quill-editor-area th {
+    background: rgba(67, 97, 238, 0.15);
+    color: #e2e8f0;
+    font-weight: 600;
+}
+#quill-editor-area .ql-syntax {
+    background: #0d0f18;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: #7dd3fc;
+}
+
+/* Placeholder */
+#quill-editor-area.ql-blank::before {
+    color: #4b5563 !important;
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* Word count bar */
+.editor-footer-bar {
+    background: #13151e;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: #4b5563;
+}
+.editor-footer-bar .word-count { font-family: 'DM Mono', monospace; }
+.editor-footer-bar .editor-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.editor-status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Form inputs */
 .form-input-admin {
     width: 100%;
     background: var(--bg-card);
@@ -24,29 +219,12 @@
     font-family: 'DM Sans', sans-serif;
     transition: border-color 0.2s;
 }
-.form-input-admin:focus {
-    outline: none;
-    border-color: var(--border-active);
-    background: var(--bg-card-hover);
-}
+.form-input-admin:focus { outline: none; border-color: var(--border-active); background: var(--bg-card-hover); }
 .form-input-admin::placeholder { color: var(--text-muted); }
 select.form-input-admin option { background: #1a1d27; }
 .form-input-admin.is-error { border-color: var(--accent-red); }
 .error-msg { color: var(--accent-red); font-size: 0.75rem; margin-top: 5px; }
-
-.image-preview {
-    width: 100%; max-height: 200px;
-    border-radius: 10px;
-    object-fit: cover;
-    margin-top: 10px;
-    display: none;
-}
-
-/* Penyesuaian agar border TinyMCE menyatu dengan tema gelap Anda */
-.tox-tinymce {
-    border-radius: 10px !important;
-    border: 1px solid var(--border-color) !important;
-}
+.image-preview { width: 100%; max-height: 200px; border-radius: 10px; object-fit: cover; margin-top: 10px; display: none; }
 {% endblock %}
 
 {% block content %}
@@ -60,22 +238,19 @@ select.form-input-admin option { background: #1a1d27; }
     </div>
 </div>
 
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" id="artikel-form">
     {% csrf_token %}
-    <div class="row g-4">
 
+    <div class="row g-4">
         <div class="col-lg-8 fade-in delay-1">
             <div class="card-admin">
                 <div class="card-header-admin">
                     <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Konten Artikel</span>
                 </div>
                 <div class="card-body-admin">
-
                     <div class="form-group">
                         <label class="form-label-admin">Judul Artikel *</label>
-                        <input type="text" name="judul" class="form-input-admin {% if form.judul.errors %}is-error{% endif %}"
-                               placeholder="Masukkan judul artikel yang menarik..."
-                               value="{{ form.judul.value|default:'' }}">
+                        {{ form.judul }}
                         {% if form.judul.errors %}
                         <div class="error-msg">{{ form.judul.errors.0 }}</div>
                         {% endif %}
@@ -83,18 +258,105 @@ select.form-input-admin option { background: #1a1d27; }
 
                     <div class="form-group">
                         <label class="form-label-admin">Konten / Isi Artikel *</label>
-                        <textarea id="editor" name="isi" placeholder="Tulis isi artikel di sini...">{{ form.isi.value|default:'' }}</textarea>
-                        {% if form.isi.errors %}
-                        <div class="error-msg">{{ form.isi.errors.0 }}</div>
-                        {% endif %}
-                    </div>
 
+                        {# Textarea tersembunyi — Quill akan menyalin data ke sini saat submit #}
+                        <textarea name="isi" id="id_isi" style="display:none;">{{ form.isi.value|default:'' }}</textarea>
+                        {% if form.isi.errors %}
+                        <div class="error-msg" style="margin-bottom:8px;">{{ form.isi.errors.0 }}</div>
+                        {% endif %}
+
+                        {# Quill Editor Container #}
+                        <div class="editor-wrapper">
+                            {# Toolbar — dibangun manual agar terkontrol penuh #}
+                            <div id="quill-toolbar">
+                                <span class="ql-formats">
+                                    <select class="ql-header">
+                                        <option value="1">Heading 1</option>
+                                        <option value="2">Heading 2</option>
+                                        <option value="3">Heading 3</option>
+                                        <option selected>Normal</option>
+                                    </select>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-font">
+                                        <option selected>Sans-serif</option>
+                                        <option value="serif">Serif</option>
+                                        <option value="monospace">Monospace</option>
+                                    </select>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-size">
+                                        <option value="small">Kecil</option>
+                                        <option selected>Normal</option>
+                                        <option value="large">Besar</option>
+                                        <option value="huge">Sangat Besar</option>
+                                    </select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-bold" title="Tebal (Ctrl+B)"></button>
+                                    <button class="ql-italic" title="Miring (Ctrl+I)"></button>
+                                    <button class="ql-underline" title="Garis Bawah (Ctrl+U)"></button>
+                                    <button class="ql-strike" title="Coret"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-color" title="Warna Teks"></select>
+                                    <select class="ql-background" title="Warna Background"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered" title="Daftar Bernomor"></button>
+                                    <button class="ql-list" value="bullet" title="Daftar Berpoin"></button>
+                                    <button class="ql-indent" value="-1" title="Geser Kiri"></button>
+                                    <button class="ql-indent" value="+1" title="Geser Kanan"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-align" title="Perataan Teks">
+                                        <option selected></option>
+                                        <option value="center"></option>
+                                        <option value="right"></option>
+                                        <option value="justify"></option>
+                                    </select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-blockquote" title="Kutipan"></button>
+                                    <button class="ql-code-block" title="Kode Blok"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-link" title="Tambah Link"></button>
+                                    <button class="ql-image" title="Tambah Gambar"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-clean" title="Hapus Pemformatan"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-undo" title="Batalkan (Ctrl+Z)">
+                                        <i class="fas fa-undo" style="font-size:11px;"></i>
+                                    </button>
+                                    <button class="ql-redo" title="Ulangi (Ctrl+Y)">
+                                        <i class="fas fa-redo" style="font-size:11px;"></i>
+                                    </button>
+                                </span>
+                            </div>
+
+                            {# Quill editable area #}
+                            <div id="quill-editor-area"></div>
+
+                            {# Footer bar — word count & status #}
+                            <div class="editor-footer-bar">
+                                <span class="word-count">
+                                    <span id="word-count-num">0</span> kata &nbsp;·&nbsp; <span id="char-count-num">0</span> karakter
+                                </span>
+                                <span class="editor-status">
+                                    <span class="editor-status-dot"></span>
+                                    Siap mengetik
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4 fade-in delay-2">
-
             <div class="card-admin mb-4">
                 <div class="card-header-admin">
                     <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Publikasi</span>
@@ -102,14 +364,7 @@ select.form-input-admin option { background: #1a1d27; }
                 <div class="card-body-admin">
                     <div class="form-group">
                         <label class="form-label-admin">Kategori *</label>
-                        <select name="kategori" class="form-input-admin">
-                            <option value="">— Pilih Kategori —</option>
-                            {% for kat in daftar_kategori %}
-                            <option value="{{ kat.id }}" {% if form.kategori.value|stringformat:"s" == kat.id|stringformat:"s" %}selected{% endif %}>
-                                {{ kat.nama }}
-                            </option>
-                            {% endfor %}
-                        </select>
+                        {{ form.kategori }}
                         {% if form.kategori.errors %}
                         <div class="error-msg">{{ form.kategori.errors.0 }}</div>
                         {% endif %}
@@ -146,80 +401,162 @@ select.form-input-admin option { background: #1a1d27; }
                     <img id="imgPreview" class="image-preview" alt="Preview">
                 </div>
             </div>
-
         </div>
     </div>
 </form>
 {% endblock %}
 
 {% block extra_script %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+{# Quill.js v2 — Gratis, Open Source, Tanpa License Key #}
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
 <script>
-    tinymce.init({
-        selector: '#editor', // Mengaitkan ke ID textarea
-        height: 600,         // Tinggi area penulisan
-        plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
-        toolbar: 'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
-        
-        // Pengaturan Tema & UI (Menyesuaikan warna panel admin)
-        skin: 'oxide-dark',
-        content_css: 'dark',
-        
-        // Pengaturan Gambar
-        image_title: true,
-        automatic_uploads: true,
-        paste_data_images: true, // Memungkinkan Copy-Paste gambar langsung!
-        
-        // Fungsi untuk mengunggah gambar secara lokal (tersimpan dalam bentuk Base64)
-        file_picker_callback: function (cb, value, meta) {
-            var input = document.createElement('input');
-            input.setAttribute('type', 'file');
-            input.setAttribute('accept', 'image/*');
+document.addEventListener('DOMContentLoaded', function () {
 
-            input.onchange = function () {
-                var file = this.files[0];
-                var reader = new FileReader();
-                reader.onload = function () {
-                    var id = 'blobid' + (new Date()).getTime();
-                    var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
-                    var base64 = reader.result.split(',')[1];
-                    var blobInfo = blobCache.create(id, file, base64);
-                    blobCache.add(blobInfo);
-
-                    // Panggil fungsi callback agar gambar tampil di editor
-                    cb(blobInfo.blobUri(), { title: file.name });
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
+    // ============================================================
+    // 1. INISIALISASI QUILL EDITOR
+    // ============================================================
+    const quill = new Quill('#quill-editor-area', {
+        modules: {
+            toolbar: {
+                container: '#quill-toolbar',
+                handlers: {
+                    // Handler undo/redo custom
+                    undo: function () { this.quill.history.undo(); },
+                    redo: function () { this.quill.history.redo(); }
+                }
+            },
+            history: {
+                delay: 500,
+                maxStack: 200,
+                userOnly: true
+            },
+            clipboard: {
+                matchVisual: false
+            }
         },
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px; line-height: 1.6; } img { max-width: 100%; height: auto; }'
+        placeholder: 'Mulai tulis artikel Anda di sini...',
+        theme: 'snow'
     });
 
-    // SCRIPT UNTUK PREVIEW COVER GAMBAR
+    // ============================================================
+    // 2. ISI KONTEN AWAL DARI DATA YANG SUDAH ADA (MODE EDIT)
+    // ============================================================
+    const existingContent = document.getElementById('id_isi').value;
+    if (existingContent && existingContent.trim() !== '') {
+        quill.clipboard.dangerouslyPasteHTML(existingContent);
+    }
+
+    // ============================================================
+    // 3. SINKRONISASI KE TEXTAREA TERSEMBUNYI SAAT SUBMIT
+    // ============================================================
+    const form = document.getElementById('artikel-form');
+    form.addEventListener('submit', function (e) {
+        const content = quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML;
+        document.getElementById('id_isi').value = content;
+    });
+
+    // ============================================================
+    // 4. WORD COUNT & CHARACTER COUNT
+    // ============================================================
+    function updateCounts() {
+        const text = quill.getText().trim();
+        const charCount = text.length;
+        const wordCount = text === '' ? 0 : text.split(/\s+/).filter(Boolean).length;
+        document.getElementById('word-count-num').textContent = wordCount;
+        document.getElementById('char-count-num').textContent = charCount;
+    }
+    quill.on('text-change', updateCounts);
+    updateCounts(); // hitung awal untuk mode edit
+
+    // ============================================================
+    // 5. PREVIEW GAMBAR COVER
+    // ============================================================
     function previewImage(input) {
         const preview = document.getElementById('imgPreview');
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = e => {
+            reader.onload = function (e) {
                 preview.src = e.target.result;
                 preview.style.display = 'block';
             };
             reader.readAsDataURL(input.files[0]);
         }
     }
+    window.previewImage = previewImage; // buat accessible dari inline handler
 
+    // ============================================================
+    // 6. DRAG & DROP GAMBAR COVER
+    // ============================================================
     const dropZone = document.getElementById('dropZone');
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent-blue)'; });
-    dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = 'var(--border-color)'; });
-    dropZone.addEventListener('drop', e => {
-        e.preventDefault();
-        dropZone.style.borderColor = 'var(--border-color)';
-        const file = e.dataTransfer.files[0];
-        if (file) {
-            document.getElementById('gambar_cover').files = e.dataTransfer.files;
-            previewImage(document.getElementById('gambar_cover'));
-        }
-    });
+    if (dropZone) {
+        dropZone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--accent-blue)';
+        });
+        dropZone.addEventListener('dragleave', function () {
+            dropZone.style.borderColor = 'var(--border-color)';
+        });
+        dropZone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-color)';
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                document.getElementById('gambar_cover').files = e.dataTransfer.files;
+                previewImage(document.getElementById('gambar_cover'));
+            }
+        });
+    }
+
+});
 </script>
+
+{# Override Quill snow theme agar sesuai dark mode dashboard #}
+<style>
+.ql-snow .ql-picker-options { z-index: 9999 !important; }
+.ql-toolbar.ql-snow { border: none !important; }
+.ql-container.ql-snow { border: none !important; }
+.ql-editor { padding: 40px 50px !important; min-height: 600px !important; }
+.ql-editor.ql-blank::before {
+    color: #4b5563 !important;
+    font-style: italic;
+    left: 50px !important;
+}
+/* Warna konten tulisan */
+.ql-editor * { color: inherit; }
+.ql-editor { color: #d1d5e8 !important; }
+.ql-editor h1, .ql-editor h2, .ql-editor h3 { color: #ffffff !important; }
+.ql-editor strong { color: #f1f5f9; }
+.ql-editor em { color: #93c5fd; }
+.ql-editor a { color: #6d89f5 !important; }
+.ql-editor blockquote {
+    border-left: 3px solid #4361ee !important;
+    background: rgba(67,97,238,0.08);
+    padding: 8px 16px;
+    border-radius: 0 6px 6px 0;
+    color: #94a3b8 !important;
+}
+.ql-editor pre.ql-syntax {
+    background: #0d0f18 !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 8px !important;
+    color: #7dd3fc !important;
+    padding: 14px 18px !important;
+}
+/* Warna ikon toolbar override global */
+.ql-snow.ql-toolbar button svg .ql-stroke,
+.ql-snow .ql-toolbar button svg .ql-stroke { stroke: #94a3b8 !important; }
+.ql-snow.ql-toolbar button svg .ql-fill,
+.ql-snow .ql-toolbar button svg .ql-fill { fill: #94a3b8 !important; }
+.ql-snow.ql-toolbar button:hover svg .ql-stroke,
+.ql-snow .ql-toolbar button:hover svg .ql-stroke { stroke: #e2e8f0 !important; }
+.ql-snow.ql-toolbar button:hover svg .ql-fill,
+.ql-snow .ql-toolbar button:hover svg .ql-fill { fill: #e2e8f0 !important; }
+.ql-snow.ql-toolbar button.ql-active svg .ql-stroke { stroke: #6d89f5 !important; }
+.ql-snow.ql-toolbar button.ql-active svg .ql-fill { fill: #6d89f5 !important; }
+.ql-snow .ql-picker { color: #94a3b8 !important; }
+.ql-snow .ql-picker-label { color: #94a3b8 !important; }
+.ql-snow .ql-picker-label svg .ql-stroke { stroke: #94a3b8 !important; }
+</style>
 {% endblock %}

@@ -6,13 +6,15 @@
     <title>{% block title %}REPORT.hub{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
     <style>
+        /* ===== LAYOUT & GLOBAL ===== */
         body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
         .navbar { background-color:#2b50d8 !important; }
         .card { transition: transform 0.2s, box-shadow 0.2s; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
         .sticky-sidebar { position: sticky; top: 20px; }
-        
+
         /* Efek Trending */
         .trending-link { transition: color 0.2s ease; }
         .trending-link:hover { color: #dc3545 !important; text-decoration: underline !important; }
@@ -23,6 +25,22 @@
         .transition-hover { transition: transform 0.2s, color 0.2s; display: inline-block; }
         .transition-hover:hover { color: #dc3545 !important; transform: translateY(-3px); }
         .hover-red:hover { color: #dc3545 !important; text-decoration: underline !important; }
+
+        /* ===== QUILL ARTICLE READER STYLES ===== */
+        .berita-content.ql-editor { padding: 0 !important; min-height: unset !important; border: none !important; }
+        .berita-content.ql-editor p { font-size: 1.1rem; margin-bottom: 14px; color: #1e293b; }
+        .berita-content.ql-editor h1 { font-size: 2rem; font-weight: 700; margin: 20px 0 10px; color: #0f172a; }
+        .berita-content.ql-editor h2 { font-size: 1.6rem; font-weight: 700; margin: 18px 0 8px; color: #1e293b; }
+        .berita-content.ql-editor h3 { font-size: 1.3rem; font-weight: 600; margin: 16px 0 6px; color: #334155; }
+        .berita-content.ql-editor ul, .berita-content.ql-editor ol { padding-left: 22px; margin-bottom: 14px; }
+        .berita-content.ql-editor li { font-size: 1.05rem; margin-bottom: 4px; }
+        .berita-content.ql-editor blockquote { border-left: 4px solid #3b82f6; padding: 10px 18px; background: #eff6ff; border-radius: 0 8px 8px 0; margin: 16px 0; color: #475569; font-style: italic; }
+        .berita-content.ql-editor pre { background: #1e293b; color: #7dd3fc; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; }
+        .berita-content.ql-editor table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+        .berita-content.ql-editor td, .berita-content.ql-editor th { border: 1px solid #cbd5e1; padding: 10px 14px; }
+        .berita-content.ql-editor th { background: #f1f5f9; font-weight: 700; }
+        .berita-content.ql-editor a { color: #2563eb; text-decoration: underline; }
+        .berita-content.ql-editor strong { color: #0f172a; }
     </style>
 </head>
 <body>

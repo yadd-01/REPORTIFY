@@ -47,11 +47,18 @@ def admin_dashboard(request):
 @staff_required
 def admin_news(request):
     query = request.GET.get('q')
+    kategori_id = request.GET.get('kategori')
+    articles = Artikel.objects.all().order_by('-tanggal_publikasi')
     if query:
-        articles = Artikel.objects.filter(judul__icontains=query).order_by('-tanggal_publikasi')
-    else:
-        articles = Artikel.objects.all().order_by('-tanggal_publikasi')
-    return render(request, 'admin_panel/admin_news.html', {'page_obj': articles})
+        articles = articles.filter(judul__icontains=query)
+    if kategori_id:
+        articles = articles.filter(kategori_id=kategori_id)
+        
+    daftar_kategori = Kategori.objects.all()
+    return render(request, 'admin_panel/admin_news.html', {
+        'page_obj': articles,
+        'daftar_kategori': daftar_kategori
+    })
 
 
 @login_required

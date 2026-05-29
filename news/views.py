@@ -32,7 +32,7 @@ def beranda(request):
     # 2. Logika Pencarian
     if query:
         semua_berita_lokal = semua_berita_lokal.filter(
-            Q(judul__icontains=query) | Q(konten__icontains=query)
+            Q(judul__icontains=query) | Q(isi__icontains=query)
         )
     
     # 3. Logika Filter Kategori

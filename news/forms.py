@@ -16,6 +16,7 @@ class ArtikelAdminForm(forms.ModelForm):
         fields = ['judul', 'isi', 'gambar_cover', 'kategori']
         widgets = {
             'judul': forms.TextInput(attrs={'class': 'form-input-admin', 'placeholder': 'Masukkan judul berita...'}),
-            'isi': forms.Textarea(attrs={'class': 'form-input-admin', 'placeholder': 'Tulis konten berita...'}),
+            # Field 'isi' di-handle oleh Quill.js di template, jadi widget-nya disembunyikan
+            'isi': forms.HiddenInput(),
             'kategori': forms.Select(attrs={'class': 'form-input-admin'}),
         }

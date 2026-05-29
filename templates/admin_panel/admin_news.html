@@ -94,7 +94,7 @@
                     </td>
                     <td style="min-width:200px;">
                         <div style="font-weight:600; color:#fff; font-size:0.875rem;">{{ artikel.judul|truncatewords:8 }}</div>
-                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">{{ artikel.konten|truncatewords:10 }}</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">{{ artikel.isi|striptags|truncatewords:10 }}</div>
                     </td>
                     <td>
                         <span style="background:rgba(59,110,248,0.12); color:#818cf8; border-radius:6px; padding:3px 9px; font-size:0.72rem; font-weight:600;">

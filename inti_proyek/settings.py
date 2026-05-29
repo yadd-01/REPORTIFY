@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     
     # Aplikasi Anda
     'rest_framework',
+    'django_ckeditor_5',
     'news',           
     'ai_tools',
     
@@ -139,6 +140,47 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'heading', '|',
+            'fontFamily', 'fontSize', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
+            'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript', 'removeFormat', '|',
+            'bulletedList', 'numberedList', 'outdent', 'indent', 'alignment', '|',
+            'link', 'blockQuote', 'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells', 'horizontalLine', 'pageBreak', '|',
+            'imageUpload', 'mediaEmbed', 'htmlEmbed', 'specialCharacters', 'findAndReplace', 'selectAll', '|',
+            'undo', 'redo'
+        ],
+        'height': 500,
+        'width': '100%',
+        'fontSize': {
+            'options': ['tiny', 'small', 'default', 'big', 'huge']
+        },
+        'fontFamily': {
+            'options': [
+                'default',
+                'Arial, Helvetica, sans-serif',
+                'Courier New, Courier, monospace',
+                'Georgia, serif',
+                'Tahoma, Geneva, sans-serif',
+                'Times New Roman, Times, serif',
+                'Trebuchet MS, Helvetica, sans-serif',
+                'Verdana, Geneva, sans-serif'
+            ]
+        },
+        'heading': {
+            'options': [
+                {'model': 'paragraph', 'title': 'Paragraph', 'class': 'ck-heading_paragraph'},
+                {'model': 'heading1', 'view': 'h1', 'title': 'Heading 1', 'class': 'ck-heading_heading1'},
+                {'model': 'heading2', 'view': 'h2', 'title': 'Heading 2', 'class': 'ck-heading_heading2'},
+                {'model': 'heading3', 'view': 'h3', 'title': 'Heading 3', 'class': 'ck-heading_heading3'}
+            ]
+        },
+        'language': 'en',
+        'removePlugins': 'resize',
+    }
+}
 
 # Pengaturan Redirect
 LOGIN_REDIRECT_URL = '/admin-panel/'

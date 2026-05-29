@@ -6,6 +6,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     
+    # Rute CKEditor upload
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
+
     # Rute aplikasi utama
     path('', include('news.urls')), 
     

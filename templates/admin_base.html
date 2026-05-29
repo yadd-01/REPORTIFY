@@ -6,7 +6,7 @@
     <title>{% block title %}Admin Panel - REPORT.hub{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #0d0f14;
@@ -30,9 +30,9 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            background-color: #050510;
+            color: #e2e8f0;
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -40,28 +40,78 @@
         /* ===== SIDEBAR ===== */
         .admin-sidebar {
             position: fixed;
-            top: 0; left: 0;
+            top: 16px; left: 16px;
             width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
+            height: calc(100vh - 32px);
+            background: rgba(8, 9, 25, 0.96);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 28px;
             display: flex;
             flex-direction: column;
             z-index: 100;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, width 0.3s ease, left 0.3s ease;
+            box-shadow: 0 20px 70px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        .admin-sidebar.closed {
+            transform: translateX(-100%);
         }
 
         .sidebar-logo {
-            padding: 28px 24px 20px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 24px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
         }
 
         .sidebar-logo .logo-text {
             font-family: 'Syne', sans-serif;
             font-weight: 800;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             letter-spacing: 0.5px;
             color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+
+        .sidebar-logo .logo-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-toggle-btn {
+            width: 38px;
+            height: 38px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.06);
+            color: #e2e8f0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle-btn:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-1px);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
         }
 
         .sidebar-logo .logo-text span { color: var(--accent-red); }
@@ -77,6 +127,30 @@
             flex: 1;
             padding: 16px 12px;
             overflow-y: auto;
+        }
+
+        .admin-sidebar.collapsed {
+            width: 78px;
+        }
+        .admin-sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+        }
+        .admin-sidebar.collapsed .logo-text,
+        .admin-sidebar.collapsed .logo-sub,
+        .admin-sidebar.collapsed .nav-label,
+        .admin-sidebar.collapsed .nav-item-admin span:not(.nav-icon):not(.nav-badge) {
+            display: none;
+        }
+        .admin-sidebar.collapsed .nav-item-admin {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .admin-sidebar.collapsed .nav-item-admin .nav-icon {
+            width: auto;
+        }
+        .admin-sidebar.collapsed .sidebar-footer {
+            display: none;
         }
 
         .sidebar-nav::-webkit-scrollbar { width: 0; }
@@ -183,6 +257,24 @@
             display: flex;
             align-items: center;
             gap: 16px;
+        }
+
+        .sidebar-toggle-btn-top {
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: rgba(255,255,255,0.06);
+            color: #e2e8f0;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle-btn-top:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-1px);
         }
 
         .topbar-search {
@@ -464,16 +556,221 @@
         .delay-3 { animation-delay: 0.15s; }
         .delay-4 { animation-delay: 0.20s; }
 
+        .admin-sidebar { background: rgba(8, 9, 25, 0.96); border-right: 1px solid rgba(255,255,255,0.08); }
+        .admin-topbar { background: rgba(5, 5, 16, 0.88); border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .admin-content { position: relative; z-index: 2; }
+        .admin-main { background: transparent; }
+
+        .stat-card, .card-admin {
+            background: rgba(18, 18, 28, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 22px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .stat-card:hover, .card-admin:hover {
+            border-color: rgba(67, 97, 238, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-admin-primary {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-admin-primary:hover {
+            background: #3652d1;
+            box-shadow: 0 0 15px rgba(67, 97, 238, 0.4);
+        }
+        .btn-icon {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e2e8f0;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-icon:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .btn-icon.danger:hover { background: #e11d48; border-color: #e11d48; color: white; }
+
+        .admin-table th {
+            color: #a0aec0;
+            font-size: 0.8rem;
+            padding: 14px 16px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+        .admin-table td {
+            color: #e2e8f0;
+            padding: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .badge-published {
+            background: rgba(72, 187, 120, 0.15);
+            color: #48bb78;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .token-bar-bg {
+            height: 6px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.07);
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .token-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #4cc9f0, #4361ee);
+            transition: width 1s ease;
+        }
+        .ai-response-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 0.82rem;
+            color: #cbd5e0;
+            line-height: 1.7;
+            margin-top: 12px;
+        }
+        .ai-meta-row { display: flex; gap: 24px; margin-top: 14px; }
+        .ai-meta-item { flex: 1; }
+        .ai-meta-label { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aec0; }
+        .ai-meta-value { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: #fff; margin-top: 3px; }
+
+        .healthy-badge {
+            background: rgba(72, 187, 120, 0.15);
+            color: #48bb78;
+            border: 1px solid rgba(72,187,120,0.25);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .vel-bars { display: flex; align-items: flex-end; gap: 8px; height: 80px; padding: 0 4px; }
+        .vel-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .vel-bar {
+            width: 100%; border-radius: 6px 6px 2px 2px;
+            background: rgba(76, 201, 240, 0.2);
+            transition: height 0.8s ease;
+            min-height: 4px;
+        }
+        .vel-bar.today { background: linear-gradient(180deg, #4361ee, #4cc9f0); }
+        .vel-label { font-size: 0.65rem; color: #a0aec0; letter-spacing: 0.5px; }
+        .vel-label.today { color: #4cc9f0; font-weight: 600; }
+
+        .solar-system-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #0a0a1a 0%, #020205 100%);
+            pointer-events: none;
+        }
+        .stars { position: absolute; width: 100%; height: 100%; background: transparent; z-index: 0; }
+        .stars::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px),
+                              radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
+                              radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 4px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            opacity: 0.4;
+        }
+        .sun {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(#ffcc00, #ff6600);
+            border-radius: 50%;
+            box-shadow: 0 0 60px #ff6600, 0 0 120px #ffcc00;
+            position: absolute;
+            z-index: 1;
+        }
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: spin linear infinite;
+            z-index: 1;
+        }
+        .orbit1 { width: 250px; height: 250px; animation-duration: 20s; }
+        .orbit2 { width: 450px; height: 450px; animation-duration: 35s; }
+        .orbit3 { width: 700px; height: 700px; animation-duration: 50s; }
+        .planet {
+            border-radius: 50%;
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .planet1 { width: 12px; height: 12px; background: #a0aec0; box-shadow: 0 0 15px #a0aec0; top: -6px; }
+        .planet2 { width: 18px; height: 18px; background: #4cc9f0; box-shadow: 0 0 20px #4cc9f0; top: -9px; }
+        .planet3 { width: 24px; height: 24px; background: #e11d48; box-shadow: 0 0 25px #e11d48; top: -12px; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
         {% block extra_style %}{% endblock %}
     </style>
 </head>
 <body>
+    <div class="solar-system-bg">
+        <div class="stars"></div>
+        <div class="sun"></div>
+        <div class="orbit orbit1"><div class="planet planet1"></div></div>
+        <div class="orbit orbit2"><div class="planet planet2"></div></div>
+        <div class="orbit orbit3"><div class="planet planet3"></div></div>
+    </div>
 
     <!-- SIDEBAR -->
     <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-logo">
-            <div class="logo-text"><span>R</span>EPORT.hub</div>
-            <div class="logo-sub">Intelligence Hub</div>
+            <div>
+                <div class="logo-text"><span>R</span>EPORT.hub</div>
+                <div class="logo-sub">Intelligence Hub</div>
+            </div>
+            <button class="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -529,7 +826,7 @@
 
         <!-- TOPBAR -->
         <header class="admin-topbar">
-            <button class="notif-btn d-lg-none" onclick="toggleSidebar()" style="border:none;">
+            <button class="sidebar-toggle-btn-top" onclick="toggleSidebar()" aria-label="Toggle sidebar">
                 <i class="fas fa-bars"></i>
             </button>
 
@@ -568,7 +865,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
-            document.getElementById('adminSidebar').classList.toggle('open');
+            document.getElementById('adminSidebar').classList.toggle('closed');
         }
     </script>
     {% block extra_script %}{% endblock %}

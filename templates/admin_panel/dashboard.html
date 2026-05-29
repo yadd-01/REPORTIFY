@@ -3,138 +3,254 @@
 {% block nav_dashboard %}active{% endblock %}
 
 {% block extra_style %}
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
+
+/* Override Global Body Style di Base Template jika memungkinkan */
+body, .main-content, .content-wrapper {
+    background-color: #050510 !important;
+    color: #e2e8f0 !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* --- ANIMASI TATA SURYA BACKGROUND --- */
+.solar-system-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Berada di belakang seluruh konten dashboard */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, #0a0a1a 0%, #020205 100%);
+    pointer-events: none;
+}
+
+/* Bintang-bintang kecil */
+.stars { position: absolute; width: 100%; height: 100%; background: transparent; z-index: 0; }
+.stars::after {
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px),
+                      radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
+                      radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 4px);
+    background-size: 550px 550px, 350px 350px, 250px 250px;
+    background-position: 0 0, 40px 60px, 130px 270px;
+    opacity: 0.4;
+}
+
+.sun { width: 80px; height: 80px; background: radial-gradient(#ffcc00, #ff6600); border-radius: 50%; box-shadow: 0 0 60px #ff6600, 0 0 120px #ffcc00; position: absolute; z-index: 1; }
+.orbit { position: absolute; border: 1px dashed rgba(255,255,255,0.1); border-radius: 50%; animation: spin linear infinite; z-index: 1; }
+.orbit1 { width: 250px; height: 250px; animation-duration: 20s; }
+.orbit2 { width: 450px; height: 450px; animation-duration: 35s; }
+.orbit3 { width: 700px; height: 700px; animation-duration: 50s; }
+
+.planet { border-radius: 50%; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); }
+.planet1 { width: 12px; height: 12px; background: #a0aec0; box-shadow: 0 0 15px #a0aec0; top: -6px; }
+.planet2 { width: 18px; height: 18px; background: #4cc9f0; box-shadow: 0 0 20px #4cc9f0; top: -9px; }
+.planet3 { width: 24px; height: 24px; background: #e11d48; box-shadow: 0 0 25px #e11d48; top: -12px; }
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- GLASSMORPHISM CARDS (Mengganti Tema Stat Card & Admin Card) --- */
+.stat-card, .card-admin {
+    background: rgba(18, 18, 28, 0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 15px !important;
+    padding: 22px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.stat-card:hover, .card-admin:hover {
+    border-color: rgba(67, 97, 238, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+/* Card Header custom alignment */
+.card-header-admin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: transparent !important;
+    border-bottom: none !important;
+    padding: 0 !important;
+}
+
+/* --- STATS STYLES --- */
 .stat-icon {
-    width: 42px; height: 42px;
+    width: 44px; height: 44px;
     border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
+    font-size: 1.1rem;
     margin-bottom: 14px;
 }
 .stat-change {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
     display: inline-block;
 }
-.stat-change.up { background: rgba(34,197,94,0.12); color: #22c55e; }
-.stat-change.live { background: rgba(249,115,22,0.12); color: #f97316; }
-.stat-change.new { background: rgba(59,110,248,0.12); color: #3b6ef8; }
-.stat-change.success { background: rgba(168,85,247,0.12); color: #a855f7; }
+.stat-change.up { background: rgba(72, 187, 120, 0.15); color: #48bb78; }
+.stat-change.live { background: rgba(225, 29, 72, 0.15); color: #e11d48; }
+.stat-change.new { background: rgba(76, 201, 240, 0.15); color: #4cc9f0; }
+.stat-change.success { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+
 .stat-value {
     font-family: 'Syne', sans-serif;
-    font-size: 2.1rem;
+    font-size: 2.2rem;
     font-weight: 800;
     color: #fff;
     line-height: 1;
 }
-.stat-label { color: var(--text-secondary); font-size: 0.82rem; margin-top: 4px; }
+.stat-label { color: #a0aec0; font-size: 0.85rem; margin-top: 6px; font-weight: 500; }
 
-/* thumbnail */
+/* --- DARK TABLE STYLES --- */
+.admin-table {
+    width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px;
+}
+.admin-table th {
+    padding: 14px 16px; 
+    border-bottom: 2px solid rgba(255,255,255,0.1); 
+    color: #a0aec0; 
+    font-size: 0.8rem; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.admin-table td {
+    padding: 16px; 
+    border-bottom: 1px solid rgba(255,255,255,0.05); 
+    font-size: 0.88rem; 
+    color: #e2e8f0;
+    vertical-align: middle;
+}
+.admin-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Thumbnail */
 .news-thumb {
     width: 48px; height: 48px;
     border-radius: 8px;
     object-fit: cover;
-    background: var(--bg-card-hover);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 .news-thumb-placeholder {
     width: 48px; height: 48px;
     border-radius: 8px;
-    background: linear-gradient(135deg, #1e2235, #2a2f45);
+    background: rgba(255,255,255,0.05);
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem;
-    color: var(--text-muted);
+    font-size: 0.75rem;
+    color: #a0aec0;
+    border: 1px solid rgba(255,255,255,0.1);
 }
+
+/* Badges & Buttons */
+.badge-published {
+    background: rgba(72, 187, 120, 0.15);
+    color: #48bb78;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.btn-admin-primary {
+    background: #4361ee !important;
+    color: white !important;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+.btn-admin-primary:hover {
+    background: #3652d1 !important;
+    box-shadow: 0 0 15px rgba(67, 97, 238, 0.4);
+}
+.btn-icon {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e2e8f0;
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 6px; text-decoration: none; transition: 0.2s;
+}
+.btn-icon:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.btn-icon.danger:hover { background: #e11d48; border-color: #e11d48; color: white; }
 
 /* Category dot */
-.cat-dot {
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
+.cat-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 
-/* AI status bar */
+/* AI status bar & Box */
 .token-bar-bg {
-    height: 6px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.07);
-    overflow: hidden;
-    margin-top: 10px;
+    height: 6px; border-radius: 10px; background: rgba(255,255,255,0.07); overflow: hidden; margin-top: 10px;
 }
 .token-bar-fill {
-    height: 100%;
-    border-radius: 10px;
-    background: linear-gradient(90deg, var(--accent-blue), #6366f1);
-    transition: width 1s ease;
+    height: 100%; border-radius: 10px; background: linear-gradient(90deg, #4cc9f0, #4361ee); transition: width 1s ease;
 }
-
-/* chart bars */
-.vel-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    height: 80px;
-    padding: 0 4px;
-}
-.vel-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.vel-bar {
-    width: 100%;
-    border-radius: 6px 6px 2px 2px;
-    background: rgba(59,110,248,0.25);
-    transition: height 0.8s ease;
-    min-height: 4px;
-}
-.vel-bar.today { background: linear-gradient(180deg, #3b6ef8, #6366f1); }
-.vel-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.5px; }
-.vel-label.today { color: var(--accent-orange); font-weight: 600; }
-
-/* AI Summary card */
 .ai-response-box {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255,255,255,0.08);
     border-radius: 10px;
     padding: 14px;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+    font-size: 0.82rem;
+    color: #cbd5e0;
     line-height: 1.7;
     margin-top: 12px;
 }
-
-.ai-meta-row {
-    display: flex;
-    gap: 24px;
-    margin-top: 14px;
-}
+.ai-meta-row { display: flex; gap: 24px; margin-top: 14px; }
 .ai-meta-item { flex: 1; }
-.ai-meta-label { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
-.ai-meta-value { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: #fff; margin-top: 3px; }
+.ai-meta-label { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aec0; }
+.ai-meta-value { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: #fff; margin-top: 3px; }
 
 .healthy-badge {
-    background: rgba(34,197,94,0.15);
-    color: var(--accent-green);
-    border: 1px solid rgba(34,197,94,0.25);
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 6px;
+    background: rgba(72, 187, 120, 0.15); color: #48bb78; border: 1px solid rgba(72,187,120,0.25);
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
 }
+
+/* Chart Bars */
+.vel-bars { display: flex; align-items: flex-end; gap: 8px; height: 80px; padding: 0 4px; }
+.vel-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.vel-bar {
+    width: 100%; border-radius: 6px 6px 2px 2px; background: rgba(76, 201, 240, 0.2); transition: height 0.8s ease; min-height: 4px;
+}
+.vel-bar.today { background: linear-gradient(180deg, #4361ee, #4cc9f0); }
+.vel-label { font-size: 0.65rem; color: #a0aec0; letter-spacing: 0.5px; }
+.vel-label.today { color: #4cc9f0; font-weight: 600; }
+
+hr { border-color: rgba(255,255,255,0.08) !important; }
 {% endblock %}
 
 {% block content %}
-<div class="page-header fade-in">
-    <h1 class="page-title">Executive Dashboard</h1>
-    <p class="page-subtitle">Real-time analytical overview of the editorial ecosystem.</p>
+<div class="solar-system-bg">
+    <div class="stars"></div>
+    <div class="sun"></div>
+    <div class="orbit orbit1"><div class="planet planet1"></div></div>
+    <div class="orbit orbit2"><div class="planet planet2"></div></div>
+    <div class="orbit orbit3"><div class="planet planet3"></div></div>
+</div>
+
+<div class="page-header fade-in mb-4">
+    <h1 class="page-title" style="font-family:'Syne', sans-serif; font-weight:800; color:#fff;">Executive Dashboard</h1>
+    <p class="page-subtitle" style="color: #a0aec0;">Real-time analytical overview of the editorial ecosystem.</p>
 </div>
 
 <div class="row g-3 mb-4">
-
     <div class="col-6 col-xl-3 fade-in delay-1">
         <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(59,110,248,0.12);">
-                <i class="fas fa-newspaper" style="color: var(--accent-blue);"></i>
+            <div class="stat-icon" style="background: rgba(67, 97, 238, 0.15);">
+                <i class="fas fa-newspaper" style="color: #4361ee;"></i>
             </div>
             <div class="stat-change up">+{{ news_growth|default:"0" }}% vs last week</div>
             <div class="stat-value">{{ total_news|default:"0" }}</div>
@@ -144,8 +260,8 @@
 
     <div class="col-6 col-xl-3 fade-in delay-2">
         <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(99,102,241,0.12);">
-                <i class="fas fa-users" style="color: #818cf8;"></i>
+            <div class="stat-icon" style="background: rgba(76, 201, 240, 0.15);">
+                <i class="fas fa-users" style="color: #4cc9f0;"></i>
             </div>
             <div class="stat-change new">+{{ new_users|default:"0" }} new</div>
             <div class="stat-value">{{ total_users|default:"0" }}</div>
@@ -155,11 +271,11 @@
 
     <div class="col-6 col-xl-3 fade-in delay-3">
         <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(249,115,22,0.12);">
-                <i class="fas fa-bolt" style="color: var(--accent-orange);"></i>
+            <div class="stat-icon" style="background: rgba(225, 29, 72, 0.15);">
+                <i class="fas fa-bolt" style="color: #e11d48;"></i>
             </div>
             <div class="stat-change live">
-                <span style="display:inline-block; width:6px; height:6px; background: var(--accent-orange); border-radius:50%; margin-right:4px; animation: pulse 1.5s infinite;"></span>
+                <span style="display:inline-block; width:6px; height:6px; background: #e11d48; border-radius:50%; margin-right:4px; animation: pulse 1.5s infinite;"></span>
                 Live Now
             </div>
             <div class="stat-value">{{ news_today|default:"0" }}</div>
@@ -169,7 +285,7 @@
 
     <div class="col-6 col-xl-3 fade-in delay-4">
         <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(168,85,247,0.12);">
+            <div class="stat-icon" style="background: rgba(168, 85, 247, 0.15);">
                 <i class="fas fa-robot" style="color: #a855f7;"></i>
             </div>
             <div class="stat-change success">98% Success</div>
@@ -177,30 +293,29 @@
             <div class="stat-label">AI Summary Used</div>
         </div>
     </div>
-
 </div>
 
 <div class="row g-4 mb-4">
-
     <div class="col-lg-8 fade-in delay-2">
         <div class="card-admin h-100">
             <div class="card-header-admin">
                 <div>
-                    <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Recent News Operations</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">{{ recent_news|length }} latest articles</div>
+                    <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; color:#fff;">Recent News Operations</div>
+                    <div style="font-size:0.8rem; color:#a0aec0; margin-top:2px;">{{ recent_news|length }} latest articles</div>
                 </div>
                 <a href="{% url 'admin_article_create' %}" class="btn-admin-primary">
                     <i class="fas fa-plus"></i> Create New Article
                 </a>
             </div>
-            <div class="card-body-admin p-0">
+            <div class="card-body-admin p-0" style="overflow-x: auto;">
                 <table class="admin-table">
                     <thead>
                         <tr>
                             <th>Thumbnail</th>
                             <th>News Title</th>
                             <th>Category</th>
-                            <th>Author</th> <th>Date</th>
+                            <th>Author</th> 
+                            <th>Date</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -216,22 +331,22 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <div style="font-weight:600; color:#fff; font-size:0.85rem;">{{ artikel.judul|truncatewords:5 }}</div>
+                                <div style="font-weight:600; color:#fff; font-size:0.88rem;">{{ artikel.judul|truncatewords:5 }}</div>
                             </td>
                             <td>
-                                <span style="font-size:0.78rem; color:var(--text-muted);">{{ artikel.kategori.nama }}</span>
+                                <span style="font-size:0.82rem; color:#a0aec0;">{{ artikel.kategori.nama }}</span>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div style="width:24px; height:24px; border-radius:50%; background:var(--bg-secondary); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:var(--text-muted);">
+                                    <div style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:0.65rem; color:#a0aec0;">
                                         <i class="fas fa-user"></i>
                                     </div>
-                                    <span style="color: var(--accent-blue); font-weight: 600; font-size: 0.8rem;">
+                                    <span style="color: #4cc9f0; font-weight: 600; font-size: 0.82rem;">
                                         {{ artikel.penulis.username|default:"System" }}
                                     </span>
                                 </div>
                             </td>
-                            <td style="color:var(--text-muted); font-size:0.78rem; white-space:nowrap;">
+                            <td style="color:#a0aec0; font-size:0.82rem; white-space:nowrap;">
                                 {{ artikel.tanggal_publikasi|date:"d M Y" }}
                             </td>
                             <td>
@@ -240,19 +355,19 @@
                             <td>
                                 <div class="d-flex gap-2">
                                     <a href="{% url 'admin_article_edit' artikel.id %}" class="btn-icon" title="Edit">
-                                        <i class="fas fa-pen"></i>
+                                        <i class="fas fa-pen" style="font-size: 0.75rem;"></i>
                                     </a>
                                     <a href="{% url 'admin_article_delete' artikel.id %}" class="btn-icon danger" title="Delete">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash" style="font-size: 0.75rem;"></i>
                                     </a>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">
+                            <td colspan="7" style="text-align:center; padding:40px; color:#a0aec0;">
                                 <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
-                                Belum ada artikel. <a href="{% url 'admin_article_create' %}" style="color:var(--accent-blue);">Buat sekarang</a>
+                                Belum ada artikel. <a href="{% url 'admin_article_create' %}" style="color:#4cc9f0; text-decoration: none;">Buat sekarang</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -263,48 +378,47 @@
     </div>
 
     <div class="col-lg-4 fade-in delay-3">
-
         <div class="card-admin mb-4">
             <div class="card-header-admin">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Categories</div>
+                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Categories</div>
                 <a href="{% url 'admin_categories' %}" class="btn-icon" title="Add Category">
                     <i class="fas fa-plus"></i>
                 </a>
             </div>
-            <div class="card-body-admin" style="padding: 12px 16px;">
+            <div class="card-body-admin" style="padding: 0;">
                 {% for kat in daftar_kategori %}
-                <div class="d-flex align-items-center justify-content-between py-2" style="border-bottom: 1px solid var(--border-color);">
+                <div class="d-flex align-items-center justify-content-between py-2" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <div class="d-flex align-items-center gap-3">
                         <span class="cat-dot" style="background:
-                            {% if forloop.counter == 1 %}#3b6ef8
-                            {% elif forloop.counter == 2 %}#22c55e
-                            {% elif forloop.counter == 3 %}#eab308
-                            {% elif forloop.counter == 4 %}#ef4444
+                            {% if forloop.counter == 1 %}#4361ee
+                            {% elif forloop.counter == 2 %}#48bb78
+                            {% elif forloop.counter == 3 %}#ffcc00
+                            {% elif forloop.counter == 4 %}#e11d48
                             {% else %}#a855f7{% endif %};"></span>
-                        <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">{{ kat.nama }}</span>
+                        <span style="font-size:0.875rem; font-weight:500; color:#e2e8f0;">{{ kat.nama }}</span>
                     </div>
                     <div class="d-flex gap-1">
-                        <a href="{% url 'admin_category_edit' kat.id %}" class="btn-icon"><i class="fas fa-pen" style="font-size:0.6rem;"></i></a>
-                        <a href="{% url 'admin_category_delete' kat.id %}" class="btn-icon danger"><i class="fas fa-trash" style="font-size:0.6rem;"></i></a>
+                        <a href="{% url 'admin_category_edit' kat.id %}" class="btn-icon"><i class="fas fa-pen" style="font-size:0.65rem;"></i></a>
+                        <a href="{% url 'admin_category_delete' kat.id %}" class="btn-icon danger"><i class="fas fa-trash" style="font-size:0.65rem;"></i></a>
                     </div>
                 </div>
                 {% empty %}
-                <p style="color:var(--text-muted); font-size:0.8rem; padding:8px 0;">Belum ada kategori.</p>
+                <p style="color:#a0aec0; font-size:0.8rem; padding:8px 0;">Belum ada kategori.</p>
                 {% endfor %}
             </div>
         </div>
 
-        <div class="card-admin mb-4" style="background: linear-gradient(135deg, #0f1628, #141830);">
-            <div class="card-body-admin">
+        <div class="card-admin mb-4">
+            <div class="card-body-admin" style="padding: 0;">
                 <div class="d-flex align-items-center gap-2 mb-3">
-                    <div style="width:28px; height:28px; background: rgba(59,110,248,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center;">
-                        <i class="fas fa-robot" style="color:var(--accent-blue); font-size:0.75rem;"></i>
+                    <div style="width:28px; height:28px; background: rgba(67, 97, 238, 0.2); border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fas fa-robot" style="color:#4cc9f0; font-size:0.75rem;"></i>
                     </div>
                     <span style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; color:#fff;">AI Status</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <span style="font-size:0.78rem; color:var(--text-muted);">Tokens Remaining</span>
-                    <span style="font-size:0.8rem; font-weight:600; color:var(--text-primary);">{{ ai_tokens_used|default:"0" }}K / 5M</span>
+                    <span style="font-size:0.8rem; color:#a0aec0;">Tokens Remaining</span>
+                    <span style="font-size:0.85rem; font-weight:600; color:#fff;">{{ ai_tokens_used|default:"0" }}K / 5M</span>
                 </div>
                 <div class="token-bar-bg">
                     <div class="token-bar-fill" style="width: {{ ai_token_percent|default:0 }}%;"></div>
@@ -313,9 +427,9 @@
         </div>
 
         <div class="card-admin">
-            <div class="card-header-admin d-flex justify-content-between align-items-center">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Recent Logins</div>
-                <a href="{% url 'admin_users' %}" style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;">View All</a>
+            <div class="card-header-admin">
+                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Recent Logins</div>
+                <a href="{% url 'admin_users' %}" style="font-size:0.78rem; color:#4cc9f0; text-decoration:none; font-weight: 500;">View All</a>
             </div>
             <div class="card-body-admin p-0">
                 <table class="admin-table">
@@ -331,29 +445,29 @@
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div style="width:28px; height:28px; border-radius:50%; background:var(--accent-blue); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:0.7rem;">
+                                    <div style="width:28px; height:28px; border-radius:50%; background:#4361ee; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:0.75rem;">
                                         {{ u.username|slice:":1"|upper }}
                                     </div>
                                     <div>
-                                        <div style="font-weight:600; color:#fff; font-size:0.8rem;">{{ u.username }}</div>
-                                        <div style="font-size:0.65rem; color:var(--text-muted);">{{ u.email|default:"No Email" }}</div>
+                                        <div style="font-weight:600; color:#fff; font-size:0.82rem;">{{ u.username }}</div>
+                                        <div style="font-size:0.7rem; color:#a0aec0;">{{ u.email|default:"No Email" }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 {% if u.is_superuser %}
-                                <span style="background:rgba(249,115,22,0.1); color:#f97316; font-size:0.6rem; padding: 3px 6px; border-radius: 4px; font-weight:600;">ADMIN</span>
+                                <span style="background:rgba(225,29,72,0.15); color:#e11d48; font-size:0.65rem; padding: 3px 6px; border-radius: 4px; font-weight:600;">ADMIN</span>
                                 {% else %}
-                                <span style="background:rgba(59,110,248,0.1); color:#3b6ef8; font-size:0.6rem; padding: 3px 6px; border-radius: 4px; font-weight:600;">USER</span>
+                                <span style="background:rgba(76,201,240,0.15); color:#4cc9f0; font-size:0.65rem; padding: 3px 6px; border-radius: 4px; font-weight:600;">USER</span>
                                 {% endif %}
                             </td>
-                            <td style="font-size:0.75rem; color:var(--text-muted);">
+                            <td style="font-size:0.78rem; color:#a0aec0;">
                                 {{ u.last_login|date:"d M, H:i"|default:"Never" }}
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">
+                            <td colspan="3" style="text-align:center; padding:20px; color:#a0aec0; font-size:0.8rem;">
                                 No recent logins.
                             </td>
                         </tr>
@@ -362,17 +476,15 @@
                 </table>
             </div>
         </div>
-
     </div>
 </div>
 
 <div class="row g-4">
-
     <div class="col-lg-6 fade-in delay-2">
         <div class="card-admin h-100">
             <div class="card-header-admin">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">
-                    <i class="fas fa-robot me-2" style="color:var(--accent-blue);"></i>AI Summary Engine
+                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">
+                    <i class="fas fa-robot me-2" style="color:#4cc9f0;"></i>AI Summary Engine
                 </div>
                 <span class="healthy-badge">Healthy</span>
             </div>
@@ -380,20 +492,20 @@
                 <div class="ai-meta-row">
                     <div class="ai-meta-item">
                         <div class="ai-meta-label">Last Prompt</div>
-                        <div style="font-size:0.8rem; color:var(--text-secondary); font-style:italic; margin-top:6px; line-height:1.5;">
+                        <div style="font-size:0.82rem; color:#cbd5e0; font-style:italic; margin-top:6px; line-height:1.5;">
                             "{{ last_prompt|default:'Summarize the latest technology news from today...' }}"
                         </div>
                     </div>
                     <div class="ai-meta-item" style="max-width:140px; text-align:right;">
                         <div class="ai-meta-label">Token Usage (24h)</div>
                         <div class="ai-meta-value">{{ token_24h|default:"0" }}</div>
-                        <div style="font-size:0.7rem; color:var(--text-muted);">units</div>
+                        <div style="font-size:0.7rem; color:#a0aec0;">units</div>
                     </div>
                 </div>
 
                 <div style="display:flex; align-items:center; gap:8px; margin-top:16px; margin-bottom:6px;">
-                    <i class="fas fa-terminal" style="color:var(--text-muted); font-size:0.7rem;"></i>
-                    <span style="font-size:0.65rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); font-weight:600;">Response Preview</span>
+                    <i class="fas fa-terminal" style="color:#a0aec0; font-size:0.7rem;"></i>
+                    <span style="font-size:0.65rem; letter-spacing:1.5px; text-transform:uppercase; color:#a0aec0; font-weight:600;">Response Preview</span>
                 </div>
                 <div class="ai-response-box">
                     {{ ai_last_response|default:"Belum ada ringkasan yang dibuat. Gunakan fitur AI Summary untuk menghasilkan ringkasan otomatis dari artikel terbaru." }}
@@ -411,8 +523,8 @@
     <div class="col-lg-6 fade-in delay-3">
         <div class="card-admin h-100">
             <div class="card-header-admin">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Editorial Velocity</div>
-                <span style="font-size:0.75rem; color:var(--text-muted);">Artikel per hari (7 hari terakhir)</span>
+                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Editorial Velocity</div>
+                <span style="font-size:0.8rem; color:#a0aec0;">Artikel per hari (7 hari terakhir)</span>
             </div>
             <div class="card-body-admin">
                 <div class="vel-bars" id="velBars">
@@ -430,20 +542,20 @@
                 <div style="margin-top:20px; display:flex; gap:24px;">
                     {% for day in velocity_data %}
                     <div style="flex:1; text-align:center;">
-                        <div style="font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; color:{% if forloop.last %}var(--accent-orange){% else %}var(--text-primary){% endif %};">
+                        <div style="font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:{% if forloop.last %}#4cc9f0{% else %}#fff{% endif %};">
                             {{ day.count }}
                         </div>
-                        <div style="font-size:0.62rem; color:var(--text-muted);">artikel</div>
+                        <div style="font-size:0.65rem; color:#a0aec0;">artikel</div>
                     </div>
                     {% endfor %}
                 </div>
 
-                <hr style="border-color:var(--border-color); margin:16px 0;">
+                <hr>
 
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Total Minggu Ini</div>
-                        <div style="font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#fff;">{{ weekly_total }} artikel</div>
+                        <div style="font-size:0.7rem; color:#a0aec0; text-transform:uppercase; letter-spacing:1px;">Total Minggu Ini</div>
+                        <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:#fff;">{{ weekly_total }} artikel</div>
                     </div>
                     <a href="{% url 'admin_reports' %}" class="btn-admin-primary">
                         <i class="fas fa-chart-line"></i> Full Report
@@ -452,7 +564,6 @@
             </div>
         </div>
     </div>
-
 </div>
 {% endblock %}
 
@@ -468,12 +579,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Pulse animation for live dot
-const style = document.createElement('style');
-style.textContent = `
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.3); }
-}`;
-document.head.appendChild(style);
+if (!document.getElementById('pulse-style')) {
+    const style = document.createElement('style');
+    style.id = 'pulse-style';
+    style.textContent = `
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.3); }
+    }`;
+    document.head.appendChild(style);
+}
 </script>
 {% endblock %}

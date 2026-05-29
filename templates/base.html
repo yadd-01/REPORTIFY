@@ -142,7 +142,7 @@
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
                     {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-alert="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
         {% endif %}
@@ -184,5 +184,92 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const chatBox = document.getElementById("chat-box");
+            const chatInput = document.getElementById("chat-input");
+            const btnKirim = document.getElementById("btn-kirim");
+
+            // Validasi: Jika di suatu halaman tidak ada card chat AI, script berhenti (agar tidak error)
+            if (!chatBox || !chatInput || !btnKirim) return;
+
+            // Fungsi untuk mencetak balon chat baru
+            function tambahPesan(teks, pengirim) {
+                const wrapper = document.createElement("div");
+                
+                // Pesan User di sebelah kanan, pesan AI di sebelah kiri (mengikuti style HTML asli temanmu)
+                if (pengirim === "user") {
+                    wrapper.className = "d-flex justify-content-end mb-3";
+                    wrapper.innerHTML = `
+                        <div class="bg-primary text-white p-3 shadow-sm" style="border-radius: 15px 15px 0 15px; max-width: 85%;">
+                            ${teks}
+                        </div>
+                    `;
+                } else {
+                    wrapper.className = "bg-white p-3 shadow-sm mb-3";
+                    wrapper.style.borderRadius = "0 15px 15px 15px";
+                    wrapper.style.width = "85%";
+                    wrapper.style.color = "#333";
+                    wrapper.innerHTML = teks;
+                }
+
+                chatBox.appendChild(wrapper);
+                // Auto scroll ke bawah tiap ada pesan masuk
+                chatBox.scrollTop = chatBox.scrollHeight;
+                return wrapper;
+            }
+
+            async function kirimPesan() {
+                const pesanText = chatInput.value.trim();
+                if (!pesanText) return;
+
+                // 1. Munculkan pesan buatan pengguna ke layar
+                tambahPesan(pesanText, "user");
+                chatInput.value = ""; // Bersihkan kolom ketik
+
+                // 2. Munculkan status loading mengetik
+                const loadingBalon = tambahPesan('<i class="fas fa-spinner fa-spin me-2"></i> Asisten sedang mengetik...', "ai");
+
+                try {
+                    // 3. Request data ke backend Django ai_tools
+                    const response = await fetch("/api/v1/ai-chat/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ message: pesanText })
+                    });
+
+                    const data = await response.json();
+                    
+                    // Hapus teks animasi loading
+                    loadingBalon.remove();
+
+                    if (data.status === "success") {
+                        // 4. Munculkan balasan asli dari DeepSeek
+                        tambahPesan(data.reply, "ai");
+                    } else {
+                        tambahPesan("Maaf, Asisten AI mengalami kendala sistem.", "ai");
+                    }
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    loadingBalon.remove();
+                    tambahPesan("Gagal terhubung ke server. Pastikan Django running.", "ai");
+                }
+            }
+
+            // Trigger lewat klik tombol pesawat terbang
+            btnKirim.addEventListener("click", kirimPesan);
+
+            // Trigger lewat tombol Enter di keyboard
+            chatInput.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    kirimPesan();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

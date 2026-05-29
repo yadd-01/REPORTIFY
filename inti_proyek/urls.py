@@ -17,6 +17,9 @@ urlpatterns = [
     
     # 💡 TAMBAHKAN BARIS INI: Menyambungkan semua rute admin kustom
     path('admin-panel/', include('news.admin_urls')), 
+    
+    # fitur ai
+    path('', include('ai_tools.urls')),
 ]
 
 if settings.DEBUG:

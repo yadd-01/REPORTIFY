@@ -27,9 +27,28 @@
                 <img src="{{ berita.gambar_cover.url }}" class="img-fluid w-100 mb-4 shadow-sm" style="border-radius: 20px; max-height: 500px; object-fit: cover;">
             {% endif %}
 
-            <div class="berita-content fs-5 text-dark mb-5" style="line-height: 1.8; text-align: justify;">
-                {{ berita.konten|linebreaks }}
+            <div class="card border-0 shadow-sm mb-5" style="border-radius: 15px; background-color: #ffffff;">
+                <div class="card-body p-4 p-md-5">
+                    <div class="berita-content fs-5 text-dark" style="line-height: 1.8; text-align: justify;">
+                        {{ berita.isi|safe }}
+                    </div>
+                </div>
             </div>
+
+            <style>
+                .berita-content p {
+                    margin-bottom: 1.5rem; /* Jarak antar paragraf agar tidak menempel */
+                    color: #212529;
+                }
+                .berita-content p:last-child {
+                    margin-bottom: 0;
+                }
+                .berita-content h3, .berita-content h4 {
+                    font-weight: 700;
+                    margin-top: 2rem;
+                    margin-bottom: 1rem;
+                }
+            </style>
 
             <hr class="my-5">
 

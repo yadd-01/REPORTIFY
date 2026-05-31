@@ -25,17 +25,16 @@ def api_berita(request):
 
 def beranda(request):
     query = request.GET.get('q')
-    kategori_filter = request.GET.get('kategori') # 1. Tangkap klik kategori
+    kategori_filter = request.GET.get('kategori')
     
     semua_berita_lokal = Artikel.objects.all().order_by('-tanggal_publikasi')
 
-    # 2. Logika Pencarian
+    # PERBAIKAN: Diubah menjadi isi__icontains agar sinkron dengan model
     if query:
         semua_berita_lokal = semua_berita_lokal.filter(
-            Q(judul__icontains=query) | Q(konten__icontains=query)
+            Q(judul__icontains=query) | Q(isi__icontains=query)
         )
     
-    # 3. Logika Filter Kategori
     if kategori_filter:
         semua_berita_lokal = semua_berita_lokal.filter(kategori__nama=kategori_filter)
 
@@ -58,13 +57,12 @@ def beranda(request):
     except Exception as e:
         pesan_error = f"Error koneksi: {e}"
 
-    # 4. Ambil semua kategori untuk ditampilkan di menu Navbar
     daftar_kategori = Kategori.objects.all()
 
     context = {
         'page_obj': page_obj,
         'berita_api': berita_gnews,
-        'daftar_kategori': daftar_kategori, # Kirim ke template
+        'daftar_kategori': daftar_kategori,
         'pesan_error': pesan_error,
     }
     return render(request, 'beranda.html', context)
@@ -72,8 +70,6 @@ def beranda(request):
 def detail_berita(request, artikel_id):
     artikel = get_object_or_404(Artikel, id=artikel_id)
     daftar_komentar = artikel.komentar.all().order_by('-tanggal_dibuat')
-    
-    # Ambil juga untuk navbar di halaman detail
     daftar_kategori = Kategori.objects.all()
     
     if request.method == 'POST':
@@ -81,7 +77,6 @@ def detail_berita(request, artikel_id):
         if form.is_valid():
             komentar_baru = form.save(commit=False)
             komentar_baru.artikel = artikel
-            # Jika user login, otomatis gunakan namanya
             if request.user.is_authenticated and not komentar_baru.nama:
                 komentar_baru.nama = request.user.username
             komentar_baru.save()
@@ -93,17 +88,16 @@ def detail_berita(request, artikel_id):
         'berita': artikel,
         'daftar_komentar': daftar_komentar,
         'form': form,
-        'daftar_kategori': daftar_kategori, # Kirim ke template
+        'daftar_kategori': daftar_kategori,
     }
     return render(request, 'detail_berita.html', context)
 
-# 5. Fungsi untuk Pendaftaran Akun Baru
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user) # Otomatis login setelah berhasil daftar
+            login(request, user)
             messages.success(request, f"Selamat datang, {user.username}! Akun Anda berhasil dibuat.")
             return redirect('beranda')
     else:

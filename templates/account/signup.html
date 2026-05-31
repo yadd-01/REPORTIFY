@@ -6,99 +6,321 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar | REPORT.hub</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+
     <style>
-        :root { --soft-bg: #f9fafb; --brand-red: #ef4444; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--soft-bg); margin: 0; height: 100vh; display: flex; }
-        .register-wrapper { display: flex; width: 100%; height: 100vh; }
-
-        .brand-side {
-            flex: 1.1; background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; padding: 50px;
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
         }
-        .logo-box {
-            width: 120px; height: 120px; background: white; border-radius: 50%; border: 4px solid rgba(255,255,255,0.2);
-            overflow: hidden; margin-bottom: 25px; display: flex; align-items: center; justify-content: center;
+
+        :root{
+            --primary:#ef4444;
+            --primary-dark:#dc2626;
+            --bg:#f8fafc;
+            --border:#e2e8f0;
+            --text:#0f172a;
+            --muted:#64748b;
         }
-        .logo-box img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.2); }
-        .brand-title { font-weight: 800; font-size: 2.8rem; letter-spacing: -1px; margin-bottom: 15px; }
 
-        .form-side { flex: 1.3; background: #ffffff; display: flex; flex-direction: column; justify-content: center; padding: 20px 10%; overflow-y: auto; }
-        .form-side input { width: 100%; background-color: #f8fafc; border: 2px solid #e2e8f0; padding: 14px 18px; border-radius: 12px; font-weight: 500; transition: all 0.3s ease; margin-bottom: 15px; }
-        .form-side input:focus { background-color: #ffffff; border-color: var(--brand-red); outline: none; }
-        
-        .custom-label { font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        
-        .btn-register { background: var(--brand-red); border: none; color: white; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 1rem; transition: all 0.3s; }
-        .btn-register:hover { background: #dc2626; transform: translateY(-2px); }
+        body{
+            font-family:'Plus Jakarta Sans',sans-serif;
+            background:var(--bg);
+            min-height:100vh;
+        }
 
-        .btn-google { background: white; border: 2px solid #e5e7eb; padding: 15px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.3s; width: 100%; text-decoration: none; color: #1e293b; margin-bottom: 20px; }
-        .btn-google:hover { background: #f8fafc; border-color: #ef4444; }
-        .btn-google img { width: 24px; margin-right: 12px; }
-        
-        .divider { display: flex; align-items: center; text-align: center; margin: 20px 0; color: #9ca3af; font-size: 0.85rem; font-weight: 600; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e5e7eb; }
-        .divider:not(:empty)::before { margin-right: .25em; }
-        .divider:not(:empty)::after { margin-left: .25em; }
-        
-        .help-text { font-size: 0.75rem; color: #94a3b8; margin-top: -10px; margin-bottom: 15px; }
-        .help-text ul { padding-left: 15px; }
-        .error-msg { color: #ef4444; font-size: 0.8rem; font-weight: bold; margin-top: -10px; margin-bottom: 10px; }
+        .register-wrapper{
+            display:flex;
+            min-height:100vh;
+        }
 
-        @media (max-width: 992px) { .brand-side { display: none; } }
+        /* LEFT SIDE */
+        .brand-side{
+            flex:1;
+            background:linear-gradient(135deg,#450a0a 0%,#7f1d1d 100%);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            flex-direction:column;
+            padding:50px;
+            color:white;
+        }
+
+        .logo-box{
+            width:130px;
+            height:130px;
+            border-radius:50%;
+            background:white;
+            overflow:hidden;
+            margin-bottom:25px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            box-shadow:0 10px 30px rgba(0,0,0,.2);
+        }
+
+        .logo-box img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        .brand-title{
+            font-size:3rem;
+            font-weight:800;
+            margin-bottom:12px;
+        }
+
+        .brand-title span{
+            color:#ef4444;
+        }
+
+        .brand-desc{
+            color:rgba(255,255,255,.75);
+            text-align:center;
+            max-width:350px;
+            line-height:1.7;
+        }
+
+        /* RIGHT SIDE */
+        .form-side{
+            flex:1.2;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:40px;
+            background:white;
+        }
+
+        .form-container{
+            width:100%;
+            max-width:550px;
+        }
+
+        .page-title{
+            font-size:2rem;
+            font-weight:800;
+            color:var(--text);
+            margin-bottom:8px;
+        }
+
+        .page-subtitle{
+            color:var(--muted);
+            margin-bottom:30px;
+        }
+
+        .btn-google{
+            width:100%;
+            height:58px;
+            border:2px solid var(--border);
+            border-radius:14px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:12px;
+            text-decoration:none;
+            color:var(--text);
+            font-weight:700;
+            margin-bottom:25px;
+            transition:.3s;
+        }
+
+        .btn-google:hover{
+            border-color:var(--primary);
+            background:#fff5f5;
+        }
+
+        .custom-label{
+            font-size:.82rem;
+            font-weight:700;
+            text-transform:uppercase;
+            color:var(--muted);
+            margin-bottom:8px;
+            display:block;
+        }
+
+        .form-side input{
+            width:100%;
+            border:2px solid var(--border);
+            background:#f8fafc;
+            padding:14px 18px;
+            border-radius:12px;
+            margin-bottom:14px;
+            transition:.3s;
+            font-size:.95rem;
+        }
+
+        .form-side input:focus{
+            border-color:var(--primary);
+            background:white;
+            outline:none;
+            box-shadow:0 0 0 4px rgba(239,68,68,.15);
+        }
+
+        .help-text{
+            background:#f8fafc;
+            border-radius:10px;
+            padding:12px;
+            font-size:.75rem;
+            color:var(--muted);
+            margin-top:-5px;
+            margin-bottom:15px;
+        }
+
+        .help-text ul{
+            margin-bottom:0;
+            padding-left:18px;
+        }
+
+        .error-msg{
+            color:#dc2626;
+            font-size:.85rem;
+            margin-top:-8px;
+            margin-bottom:12px;
+            font-weight:600;
+        }
+
+        .btn-register{
+            width:100%;
+            height:58px;
+            border:none;
+            border-radius:12px;
+            background:var(--primary);
+            color:white;
+            font-weight:700;
+            letter-spacing:.5px;
+            transition:.3s;
+            margin-top:10px;
+        }
+
+        .btn-register:hover{
+            background:var(--primary-dark);
+            transform:translateY(-2px);
+        }
+
+        .bottom-links{
+            margin-top:25px;
+            text-align:center;
+        }
+
+        .bottom-links a{
+            text-decoration:none;
+        }
+
+        @media(max-width:992px){
+
+            .brand-side{
+                display:none;
+            }
+
+            .form-side{
+                flex:1;
+                padding:30px;
+            }
+
+            .page-title{
+                font-size:1.8rem;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-    <div class="register-wrapper">
-        <div class="brand-side">
-            <div class="logo-box mx-auto">
-                <img src="{% static 'logo.png' %}" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=R+H&background=fff&color=b91c1c'">
-            </div>
-            <h1 class="brand-title fw-bold"><span class="text-danger">R</span>EPORT.hub</h1>
-            <p class="text-white-50 fs-6">Jadilah bagian dari komunitas cerdas kami.</p>
+<div class="register-wrapper">
+
+    <div class="brand-side">
+        <div class="logo-box">
+            <img src="{% static 'logo.png' %}" alt="Logo">
         </div>
 
-        <div class="form-side">
-            <div class="mb-4">
-                <h2 class="fw-bold">Buat Akun Baru</h2>
-            </div>
+        <h1 class="brand-title">
+            <span>R</span>EPORT.hub
+        </h1>
+
+        <p class="brand-desc">
+            Jadilah bagian dari komunitas cerdas kami dan dapatkan akses
+            ke informasi, berita, dan teknologi terbaru.
+        </p>
+    </div>
+
+    <div class="form-side">
+
+        <div class="form-container">
+
+            <h2 class="page-title">Buat Akun Baru</h2>
+            <p class="page-subtitle">
+                Daftar untuk mulai menggunakan REPORT.hub
+            </p>
 
             <a href="{% provider_login_url 'google' %}" class="btn-google">
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="width: 24px; margin-right: 12px;">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-    </svg>
-    MASUK DENGAN GOOGLE
-</a>
+
+                <svg width="22" height="22" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+
+                Daftar dengan Google
+            </a>
+
             <form method="POST" action="{% url 'account_signup' %}">
                 {% csrf_token %}
-                
+
                 {% for field in form %}
-                    <label class="custom-label">{{ field.label }}</label>
+
+                    <label class="custom-label">
+                        {{ field.label }}
+                    </label>
+
                     {{ field }}
+
                     {% if field.errors %}
-                        <div class="error-msg">{{ field.errors|striptags }}</div>
+                        <div class="error-msg">
+                            {{ field.errors|striptags }}
+                        </div>
                     {% endif %}
-                    {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text|safe }}</div>
+
+                    {% if field.name == "password1" %}
+                        <div class="help-text">
+                            Password minimal 8 karakter dan tidak boleh terlalu umum.
+                        </div>
                     {% endif %}
+
                 {% endfor %}
 
-                <button type="submit" class="btn btn-register w-100 mt-2">DAFTAR SEKARANG</button>
+                <button type="submit" class="btn-register">
+                    DAFTAR SEKARANG
+                </button>
+
             </form>
 
-            <div class="text-center mt-4">
-                <p class="text-muted small">Sudah memiliki akun? <a href="{% url 'account_login' %}" class="text-danger fw-bold text-decoration-none ms-1">Masuk di sini</a></p>
-                <a href="{% url 'beranda' %}" class="text-muted small text-decoration-none d-block mt-3"><i class="fas fa-home me-1"></i> Kembali ke Beranda</a>
+            <div class="bottom-links">
+
+                <p class="text-muted">
+                    Sudah memiliki akun?
+                    <a href="{% url 'account_login' %}" class="fw-bold text-danger">
+                        Masuk di sini
+                    </a>
+                </p>
+
+                <a href="{% url 'beranda' %}" class="text-muted">
+                    <i class="fas fa-home me-1"></i>
+                    Kembali ke Beranda
+                </a>
+
             </div>
+
         </div>
+
     </div>
+
+</div>
 
 </body>
 </html>

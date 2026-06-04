@@ -202,7 +202,7 @@ AUTHENTICATION_BACKENDS = [
 # Konfigurasi Alur Registrasi
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
-SOCIALACCOUNT_LOGIN_ON_GET = True # Langsung proses login saat link diklik (tidak perlu halaman konfirmasi)
+SOCIALACCOUNT_LOGIN_ON_GET = False # Matikan langsung proses login saat link diklik untuk keamanan dan menghindari auto-login yang tidak diinginkan
 
 ACCOUNT_EMAIL_VERIFICATION = 'none' # Matikan pengiriman email konfirmasi (karena kita di localhost)
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True

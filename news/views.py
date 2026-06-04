@@ -137,8 +137,8 @@ def detail_berita(request, artikel_id):
         if form.is_valid():
             komentar_baru = form.save(commit=False)
             komentar_baru.artikel = artikel
-            if request.user.is_authenticated and not komentar_baru.nama:
-                komentar_baru.nama = request.user.username
+            if request.user.is_authenticated and not komentar_baru.nama_pengguna:
+                komentar_baru.nama_pengguna = request.user.username
             komentar_baru.save()
             return redirect('detail_berita', artikel_id=artikel.id)
     else:

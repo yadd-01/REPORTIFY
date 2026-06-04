@@ -14,7 +14,7 @@
         .card { transition: transform 0.2s, box-shadow 0.2s; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
         .sticky-sidebar { position: sticky; top: 20px; }
-
+        
         /* Efek Trending */
         .trending-link { transition: color 0.2s ease; }
         .trending-link:hover { color: #dc3545 !important; text-decoration: underline !important; }
@@ -121,18 +121,19 @@
     <div class="bg-white border-bottom shadow-sm mb-4 trending-wrapper">
         <div class="container-fluid px-4 px-lg-5 py-2 d-flex align-items-center trending-container">
             <span class="badge bg-danger rounded-pill me-3 px-3 py-2 fw-bold d-flex align-items-center" style="font-size: 0.85rem; letter-spacing: 0.5px;">
-                <i class="fas fa-fire me-2"></i> TRENDING
+                <i class="fas fa-fire me-2"></i> TRENDING HARI INI
             </span>
             <div class="d-flex align-items-center gap-3 fw-semibold flex-nowrap" style="font-size: 0.95rem;">
-                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Perang Iran</a>
-                <span class="text-muted small">•</span>
-                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Makan Bergizi Gratis</a>
-                <span class="text-muted small">•</span>
-                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Timnas U-23</a>
-                <span class="text-muted small">•</span>
-                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Pilkada Serentak 2024</a>
-                <span class="text-muted small">•</span>
-                <a href="#" class="text-dark text-decoration-none trending-link text-nowrap">Rupiah Melemah</a>
+                {% for topik in topik_trending %}
+                    <a href="{% url 'beranda' %}?q={{ topik }}" class="text-dark text-decoration-none hover-primary text-nowrap">
+                        #{{ topik }}
+                    </a>
+                    {% if not forloop.last %}
+                        <span class="text-muted small">•</span>
+                    {% endif %}
+                {% empty %}
+                    <span class="text-muted italic small">Belum ada data tren terkalkulasi hari ini.</span>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -191,14 +192,11 @@
             const chatInput = document.getElementById("chat-input");
             const btnKirim = document.getElementById("btn-kirim");
 
-            // Validasi: Jika di suatu halaman tidak ada card chat AI, script berhenti (agar tidak error)
             if (!chatBox || !chatInput || !btnKirim) return;
 
-            // Fungsi untuk mencetak balon chat baru
             function tambahPesan(teks, pengirim) {
                 const wrapper = document.createElement("div");
                 
-                // Pesan User di sebelah kanan, pesan AI di sebelah kiri (mengikuti style HTML asli temanmu)
                 if (pengirim === "user") {
                     wrapper.className = "d-flex justify-content-end mb-3";
                     wrapper.innerHTML = `
@@ -215,7 +213,6 @@
                 }
 
                 chatBox.appendChild(wrapper);
-                // Auto scroll ke bawah tiap ada pesan masuk
                 chatBox.scrollTop = chatBox.scrollHeight;
                 return wrapper;
             }
@@ -224,15 +221,12 @@
                 const pesanText = chatInput.value.trim();
                 if (!pesanText) return;
 
-                // 1. Munculkan pesan buatan pengguna ke layar
                 tambahPesan(pesanText, "user");
-                chatInput.value = ""; // Bersihkan kolom ketik
+                chatInput.value = "";
 
-                // 2. Munculkan status loading mengetik
                 const loadingBalon = tambahPesan('<i class="fas fa-spinner fa-spin me-2"></i> Asisten sedang mengetik...', "ai");
 
                 try {
-                    // 3. Request data ke backend Django ai_tools
                     const response = await fetch("/api/v1/ai-chat/", {
                         method: "POST",
                         headers: {
@@ -242,12 +236,9 @@
                     });
 
                     const data = await response.json();
-                    
-                    // Hapus teks animasi loading
                     loadingBalon.remove();
 
                     if (data.status === "success") {
-                        // 4. Munculkan balasan asli dari DeepSeek
                         tambahPesan(data.reply, "ai");
                     } else {
                         tambahPesan("Maaf, Asisten AI mengalami kendala sistem.", "ai");
@@ -260,10 +251,7 @@
                 }
             }
 
-            // Trigger lewat klik tombol pesawat terbang
             btnKirim.addEventListener("click", kirimPesan);
-
-            // Trigger lewat tombol Enter di keyboard
             chatInput.addEventListener("keypress", function (e) {
                 if (e.key === "Enter") {
                     kirimPesan();

@@ -182,8 +182,10 @@ CKEDITOR_5_CONFIGS = {
     }
 }
 
-# Pengaturan Redirect
-LOGIN_REDIRECT_URL = '/admin-panel/'
+# ==========================================
+# PENGATURAN REDIRECT (SUDAH DIPERBAIKI)
+# ==========================================
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 

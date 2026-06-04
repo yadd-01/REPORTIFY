@@ -9,12 +9,14 @@ class Kategori(models.Model):
 
 class Artikel(models.Model):
     judul = models.CharField(max_length=255)
-    isi = models.TextField()  # Disinkronkan: sebelumnya 'konten'
+    isi = models.TextField()
     gambar_cover = models.ImageField(upload_to='berita/', null=True, blank=True)
     kategori = models.ForeignKey(Kategori, on_delete=models.CASCADE)
-    penulis = models.ForeignKey(User, on_delete=models.CASCADE) # Wajib untuk Dashboard
     tanggal_publikasi = models.DateTimeField(auto_now_add=True)
     penulis = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # MENYIMPAN DATA TRAFFIC KLIK UNTUK ALGORITMA GREEDY
+    views = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.judul

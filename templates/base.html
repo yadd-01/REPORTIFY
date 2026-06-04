@@ -107,7 +107,7 @@
             <div class="d-flex align-items-center gap-3 fw-semibold flex-nowrap" style="font-size: 0.95rem;">
                 {% for topik in topik_trending %}
                     <a href="{% url 'beranda' %}?q={{ topik }}" class="text-dark text-decoration-none hover-primary text-nowrap">
-                        #{{ topik }}
+                        {{ topik }}
                     </a>
                     {% if not forloop.last %}
                         <span class="text-muted small">•</span>

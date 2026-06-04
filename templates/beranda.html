@@ -18,34 +18,28 @@
                 </h3>
             {% endif %}
 
-            {% if not request.GET.q and not request.GET.kategori and page_obj.number == 1 %}
-                {% for tren in topik_trending %}
-                <div class="card bg-dark text-white border-0 shadow-sm mb-4 overflow-hidden headline-card" style="border-radius: 15px; position: relative;">
-                    
-                    <span class="badge bg-danger position-absolute top-0 start-0 m-3 fs-6 px-3 py-2 rounded-pill shadow" style="z-index: 10;">
-                        <i class="fas fa-fire me-1"></i> TRENDING UTAMA ({{ tren.views }} Views)
-                    </span>
-
-                    {% if tren.gambar_cover %}
-                        <img src="{{ tren.gambar_cover.url }}" class="card-img w-100" alt="Cover" style="height: 450px; object-fit: cover; filter: brightness(0.55);">
+            {% for berita in page_obj %}
+                
+                {% if forloop.first and not request.GET.q and not request.GET.kategori and page_obj.number == 1 %}
+                <div class="card bg-dark text-white border-0 shadow-sm mb-4 overflow-hidden headline-card" style="border-radius: 15px;">
+                    {% if berita.gambar_cover %}
+                        <img src="{{ berita.gambar_cover.url }}" class="card-img w-100" alt="Cover" style="height: 450px; object-fit: cover; filter: brightness(0.55);">
                     {% else %}
                         <div class="w-100 bg-secondary" style="height: 450px;"></div>
                     {% endif %}
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end p-4 p-lg-5">
-                        <span class="badge bg-primary align-self-start mb-3 fs-6 px-3 py-2 rounded-pill">{{ tren.kategori.nama }}</span>
+                        <span class="badge bg-danger align-self-start mb-3 fs-6 px-3 py-2 rounded-pill">{{ berita.kategori.nama }}</span>
                         <h1 class="card-title fw-bold" style="font-size: 2.2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                            <a href="{% url 'detail_berita' tren.id %}" class="text-white text-decoration-none stretched-link">{{ tren.judul }}</a>
+                            <a href="{% url 'detail_berita' berita.id %}" class="text-white text-decoration-none stretched-link">{{ berita.judul }}</a>
                         </h1>
-                        <p class="card-text d-none d-md-block fs-5 mt-2 text-light">{{ tren.isi|safe|truncatewords:20 }}</p>
+                        <p class="card-text d-none d-md-block fs-5 mt-2 text-light">{{ berita.isi|safe|truncatewords:20 }}</p>
                     </div>
                 </div>
-                {% endfor %}
 
                 <h5 class="fw-bold border-bottom border-3 border-primary pb-2 mb-4 mt-5 text-primary">BERITA TERBARU</h5>
-            {% endif %}
 
-            {% for berita in page_obj %}
+                {% else %}
                 <div class="card border-0 shadow-sm mb-3 overflow-hidden" style="border-radius: 12px;">
                     <div class="row g-0">
                         <div class="col-md-4">
@@ -60,7 +54,6 @@
                                 <div class="mb-2">
                                     <span class="text-danger fw-bold small text-uppercase me-2">{{ berita.kategori.nama }}</span>
                                     <span class="text-muted small"><i class="far fa-clock me-1"></i> {{ berita.tanggal_publikasi|date:"d M Y" }}</span>
-                                    <span class="text-muted small ms-2"><i class="far fa-eye me-1"></i> {{ berita.views }} Views</span>
                                 </div>
                                 <h4 class="card-title fw-bold mb-3">
                                     <a href="{% url 'detail_berita' berita.id %}" class="text-decoration-none text-dark">{{ berita.judul }}</a>
@@ -70,6 +63,8 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
+            
             {% empty %}
                 <div class="alert alert-warning py-4">
                     {% if request.GET.q %}
@@ -105,16 +100,19 @@
         </div>
 
         <div class="col-lg-4">
+            
             <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
                 <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center" style="border-radius: 15px 15px 0 0;">
                     <span><i class="fas fa-robot text-primary me-2"></i> Asisten AI</span>
                     <span class="badge bg-success text-white" id="status-ai">Online</span>
                 </div>
+                
                 <div class="card-body p-4 bg-light" id="chat-box" style="height: 300px; overflow-y: auto;">
                     <div class="bg-white p-3 shadow-sm mb-3" style="border-radius: 0 15px 15px 15px; width: 85%;">
                         Halo! Saya asisten berita AI untuk Report.Hub. Ada yang bisa saya bantu untuk merangkum atau mencari tren berita hari ini? 🚀
                     </div>
                 </div>
+                
                 <div class="card-footer bg-white border-0 p-3" style="border-radius: 0 0 15px 15px;">
                     <div class="input-group">
                         <input type="text" id="chat-input" class="form-control rounded-pill bg-light border-0 ps-3" placeholder="Ketik pertanyaan..." >
@@ -124,36 +122,28 @@
             </div>
 
             <h5 class="fw-bold border-bottom border-3 border-danger pb-2 mb-4"><span class="text-danger">GNews</span> Live</h5>
-            
             {% for gnews in berita_api %}
-            <div class="card border-0 shadow-sm mb-3 overflow-hidden" style="border-radius: 10px;">
+            <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px;">
                 <div class="row g-0 align-items-center">
-                    {% if gnews.image %}
                     <div class="col-4">
-                        <img src="{{ gnews.image }}" class="img-fluid w-100" style="object-fit: cover; height: 90px; min-height: 90px;" alt="gnews-thumb">
+                        <img src="{{ gnews.image }}" class="img-fluid rounded-start h-100" style="object-fit: cover; min-height: 80px;" alt="gnews">
                     </div>
-                    {% endif %}
-                    
-                    <div class="{% if gnews.image %}col-8{% else %}col-12{% endif %}">
+                    <div class="col-8">
                         <div class="card-body py-2 px-3">
-                            <a href="{{ gnews.url }}" target="_blank" class="text-dark fw-bold text-decoration-none d-block content-link" style="font-size: 0.88rem; line-height: 1.3; max-height: 2.6rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
-                                {{ gnews.title }}
+                            <a href="{{ gnews.url }}" target="_blank" class="text-dark fw-bold text-decoration-none" style="font-size: 0.9rem;">
+                                {{ gnews.title|truncatewords:8 }}
                             </a>
-                            <p class="small text-muted mb-0 mt-1" style="font-size: 0.75rem;"><i class="fas fa-globe me-1"></i> {{ gnews.source.name }}</p>
+                            <p class="small text-muted mb-0 mt-1">{{ gnews.source.name }}</p>
                         </div>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <div class="alert alert-secondary small text-center py-3">
-                {% if pesan_error %}
-                    <span class="text-danger fw-bold"><i class="fas fa-exclamation-circle"></i> Kuota API Habis / Error</span>
-                    <p class="mb-0 mt-1 text-muted px-1" style="font-size: 0.75rem;">{{ pesan_error }}</p>
-                {% else %}
-                    <i class="fas fa-spinner fa-spin me-1"></i> Hubungan API terputus atau tidak ada data berita internasional.
-                {% endif %}
+            <div class="alert alert-secondary small">
+                Berita internasional sedang memuat...
             </div>
             {% endfor %}
+
         </div>
 
     </div>

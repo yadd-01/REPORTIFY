@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-header bg-dark text-white fw-bold p-3" style="border-radius: 15px 15px 0 0;">
+                    <span><i class="fas fa-shield-alt text-primary me-2"></i> Report.Hub Anti-Hoaks Center</span>
+                </div>
+                
+                <div class="card-body p-4 bg-light">
+                    <p class="text-muted small mb-4">
+                        Punya berita mencurigakan dari WhatsApp atau media sosial? Tempelkan teks lengkapnya di bawah ini. AI kami akan menganalisis validitas narasi tersebut secara ilmiah dan kritis.
+                    </p>
+                    
+                    <form id="form-cek-hoaks">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea id="teks-berita" class="form-control border-0 shadow-sm p-3" rows="6" 
+                                      style="border-radius: 12px; resize: none;" 
+                                      placeholder="Tempel (paste) teks berita atau pesan berantai di sini..." required></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" id="btn-periksa" class="btn btn-primary fw-bold p-2.5" style="border-radius: 10px;">
+                                <span id="text-tombol"><i class="fas fa-search-plus me-2"></i> Mulai Periksa Berita dengan AI</span>
+                                <span id="loading-tombol" class="d-none">
+                                    <i class="fas fa-spinner fa-spin me-2"></i> Analisis Sedang Berjalan...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="wrapper-hasil" class="mt-4 pt-4 border-top d-none">
+                        <h5 class="fw-bold mb-3 text-dark"><i class="fas fa-file-alt text-primary me-2"></i> Laporan Hasil Analisis AI:</h5>
+                        <div id="konten-hasil" class="p-3 bg-white border border-warning shadow-sm" 
+                             style="border-radius: 12px; white-space: pre-line; border-left: 5px solid #ffc107 !important;">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formHoaks = document.getElementById('form-cek-hoaks');
+    
+    if (formHoaks) {
+        formHoaks.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const teksBerita = document.getElementById('teks-berita').value.trim();
+            const btnPeriksa = document.getElementById('btn-periksa');
+            const textTombol = document.getElementById('text-tombol');
+            const loadingTombol = document.getElementById('loading-tombol');
+            const wrapperHasil = document.getElementById('wrapper-hasil');
+            const kontenHasil = document.getElementById('konten-hasil');
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            if (!teksBerita) {
+                alert("Silakan isi teks beritanya dahulu!");
+                return;
+            }
+
+            btnPeriksa.disabled = true;
+            textTombol.classList.add('d-none');
+            loadingTombol.classList.remove('d-none');
+            wrapperHasil.classList.add('d-none'); 
+
+            fetch("{% url 'cek_fakta' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrftoken
+                },
+                body: new URLSearchParams({
+                    'teks_berita': teksBerita
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                btnPeriksa.disabled = false;
+                textTombol.classList.remove('d-none');
+                loadingTombol.classList.add('d-none');
+
+                if (data.success) {
+                    kontenHasil.textContent = data.hasil_analisis;
+                    wrapperHasil.classList.remove('d-none'); 
+                } else {
+                    // Biar pesannya lebih bersahabat di kotak kuning daripada pop-up alert
+                    kontenHasil.textContent = "Pemberitahuan: " + data.error;
+                    wrapperHasil.classList.remove('d-none');
+                }
+            })
+            .catch(error => {
+                btnPeriksa.disabled = false;
+                textTombol.classList.remove('d-none');
+                loadingTombol.classList.add('d-none');
+                kontenHasil.textContent = "Kendala koneksi ke server: " + error;
+                wrapperHasil.classList.remove('d-none');
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

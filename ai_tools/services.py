@@ -14,7 +14,7 @@ def tanya_deepseek(prompt_user, system_instruction):
 
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"        
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"        
     headers = {
         'Content-Type': 'application/json'
     }
@@ -62,7 +62,7 @@ def tanya_deepseek(prompt_user, system_instruction):
 def cek_hoaks_berita(teks_berita_user):
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     headers = {'Content-Type': 'application/json'}
     
     system_instruction = (

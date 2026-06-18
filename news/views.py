@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q, Count, F
+from django.core.cache import cache
 import requests
 import re
 
@@ -24,7 +25,12 @@ from .forms import KomentarForm
 GNEWS_API_KEY = 'ab1b66225c8b4d14fe45c82bcb8bcbec'
 
 def ambil_berita_gnews(max_hasil=5):
-    """Ambil berita dari GNews API, return list artikel atau list kosong jika gagal."""
+    """Ambil berita dari GNews API, return list artikel atau list kosong jika gagal (dengan caching)."""
+    cache_key = f"gnews_articles_{max_hasil}"
+    hasil_cached = cache.get(cache_key)
+    if hasil_cached is not None:
+        return hasil_cached
+
     url = (
         f"https://gnews.io/api/v4/top-headlines"
         f"?category=general&lang=id&country=id&max={max_hasil}&apikey={GNEWS_API_KEY}"
@@ -32,7 +38,9 @@ def ambil_berita_gnews(max_hasil=5):
     try:
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
-            return response.json().get('articles', [])
+            articles = response.json().get('articles', [])
+            cache.set(cache_key, articles, 600)  # Cache selama 10 menit
+            return articles
     except Exception:
         pass
     return []
@@ -146,25 +154,16 @@ def beranda(request):
     if kategori_filter:
         semua_berita_lokal = semua_berita_lokal.filter(kategori__nama=kategori_filter)
 
-    paginator = Paginator(semua_berita_lokal, 5)
+    paginator = Paginator(semua_berita_lokal, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Ambil GNews sekali saja, dipakai untuk sidebar dan trending
+    # Ambil GNews untuk sidebar GNews Live
     berita_gnews = ambil_berita_gnews(max_hasil=5)
-
-    daftar_kategori = Kategori.objects.all()
-    topik_trending = hitung_trending_topics()
-
-    # Daftar trending gabungan lokal + GNews
-    daftar_trending_gabungan = buat_trending_gabungan(berita_gnews=berita_gnews)
 
     context = {
         'page_obj': page_obj,
         'berita_api': berita_gnews,
-        'daftar_kategori': daftar_kategori,
-        'topik_trending': topik_trending,
-        'daftar_trending_gabungan': daftar_trending_gabungan,
     }
     return render(request, 'beranda.html', context)
 
@@ -175,7 +174,6 @@ def detail_berita(request, artikel_id):
     Artikel.objects.filter(id=artikel_id).update(jumlah_views=F('jumlah_views') + 1)
 
     daftar_komentar = artikel.komentar.all().order_by('-tanggal_dibuat')
-    daftar_kategori = Kategori.objects.all()
 
     if request.method == 'POST':
         form = KomentarForm(request.POST)
@@ -189,15 +187,10 @@ def detail_berita(request, artikel_id):
     else:
         form = KomentarForm()
 
-    topik_trending = hitung_trending_topics()
-
     context = {
         'berita': artikel,
         'daftar_komentar': daftar_komentar,
         'form': form,
-        'daftar_kategori': daftar_kategori,
-        'topik_trending': topik_trending,
-        'daftar_trending_gabungan': buat_trending_gabungan(),
     }
     return render(request, 'detail_berita.html', context)
 

@@ -21,30 +21,16 @@
                 <div class="badge bg-primary me-3 px-3 py-2 rounded-pill">{{ berita.kategori.nama }}</div>
                 <span><i class="far fa-calendar-alt me-1"></i> {{ berita.tanggal_publikasi|date:"d F Y" }}</span>
                 <span class="ms-3"><i class="far fa-user me-1"></i> Redaksi REPORT.hub</span>
+                <span class="ms-3"><i class="fas fa-eye me-1"></i> {{ berita.jumlah_views }} views</span>
             </div>
 
             {% if berita.gambar_cover %}
                 <img src="{{ berita.gambar_cover.url }}" class="img-fluid w-100 mb-4 shadow-sm" style="border-radius: 20px; max-height: 500px; object-fit: cover;">
             {% endif %}
 
-            <div class="berita-content fs-5 text-dark mb-5" style="line-height: 1.8; text-align: justify;">
-                {{ berita.konten|linebreaks }}
+            <div class="berita-content mb-5">
+                {{ berita.isi|safe }}
             </div>
-
-            <style>
-                .berita-content p {
-                    margin-bottom: 1.5rem;
-                    color: #212529;
-                }
-                .berita-content p:last-child {
-                    margin-bottom: 0;
-                }
-                .berita-content h3, .berita-content h4 {
-                    font-weight: 700;
-                    margin-top: 2rem;
-                    margin-bottom: 1rem;
-                }
-            </style>
 
             <hr class="my-5">
 

@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-+t^#*&97h+rtz=@@f3^#ovv&po6xyt@6j6hpn64d135n20f4ps"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
 
@@ -80,6 +80,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -137,9 +138,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Untuk production PythonAnywhere
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-STATICFILES_DIRS = [BASE_DIR / "static"]
 
 CKEDITOR_5_CONFIGS = {
     'default': {
@@ -200,8 +203,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Konfigurasi Alur Registrasi
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 SOCIALACCOUNT_LOGIN_ON_GET = False # Matikan langsung proses login saat link diklik untuk keamanan dan menghindari auto-login yang tidak diinginkan
 
 ACCOUNT_EMAIL_VERIFICATION = 'none' # Matikan pengiriman email konfirmasi (karena kita di localhost)

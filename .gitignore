@@ -1,11 +1,48 @@
-# Environments
+# === SECRETS & ENVIRONMENT ===
 .env
-.venv/
-env/
-.gitgnore
-# Database
-db.sqlite3
+.env.*
+*.env
 
-# Python cache
+# === VIRTUAL ENVIRONMENT ===
+.venv/
+venv/
+env/
+ENV/
+
+# === DATABASE ===
+db.sqlite3
+*.sqlite3
+
+# === PYTHON CACHE ===
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# === STATIC FILES (generated, jangan di-commit) ===
+staticfiles/
+
+# === MEDIA UPLOADS (user content) ===
+# media/   <- uncomment ini jika media tidak perlu di repo
+
+# === DJANGO ===
+*.log
+local_settings.py
+error.log
+inti_proyek/settings_production.py
+
+# === IDE & EDITOR ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS FILES ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === KIRO ===
+.kiro/

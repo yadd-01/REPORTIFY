@@ -7,79 +7,88 @@ from dotenv import load_dotenv
 load_dotenv()  # Memuat variabel lingkungan dari file .env
 
 # Model Gemini yang digunakan — ganti di satu tempat ini saja
-GEMINI_MODEL = "gemini-2.0-flash"
+# gemini-1.5-flash lebih stabil, fallback ke gemini-2.0-flash jika 503
+GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL_FALLBACK = "gemini-2.0-flash"
 
 def _panggil_gemini(teks_prompt, max_retry=2):
     """
-    Helper internal: panggil Gemini API dengan retry otomatis saat kena 429.
-    max_retry = jumlah percobaan ulang setelah gagal (default 2x).
+    Helper internal: panggil Gemini API dengan retry otomatis saat kena 429/503.
+    Jika model utama 503, otomatis fallback ke model cadangan.
     """
+    import re
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
     if not GEMINI_API_KEY:
         return None, "GEMINI_API_KEY tidak ditemukan. Pastikan sudah diset di environment variable."
 
-    url = (
-        f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
-    )
     headers = {'Content-Type': 'application/json'}
     payload = {"contents": [{"parts": [{"text": teks_prompt}]}]}
 
-    for percobaan in range(max_retry + 1):
-        try:
-            response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
+    # Coba model utama dulu, lalu fallback jika 503
+    daftar_model = [GEMINI_MODEL, GEMINI_MODEL_FALLBACK]
 
-            if response.status_code == 200:
-                data = response.json()
-                teks = data['candidates'][0]['content']['parts'][0]['text']
-                return teks, None
+    for model in daftar_model:
+        url = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{model}:generateContent?key={GEMINI_API_KEY}"
+        )
 
-            elif response.status_code == 429:
-                # Rate limit — coba baca berapa detik harus tunggu dari pesan error
-                try:
-                    pesan = response.json().get('error', {}).get('message', '')
-                except Exception:
-                    pesan = ''
+        for percobaan in range(max_retry + 1):
+            try:
+                response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
 
-                # Coba ekstrak waktu tunggu dari pesan, default 15 detik
-                tunggu = 15
-                import re
-                cocok = re.search(r'retry in (\d+)', pesan, re.IGNORECASE)
-                if cocok:
-                    tunggu = int(cocok.group(1)) + 2  # tambah 2 detik buffer
+                if response.status_code == 200:
+                    data = response.json()
+                    teks = data['candidates'][0]['content']['parts'][0]['text']
+                    return teks, None
 
-                if percobaan < max_retry:
-                    time.sleep(tunggu)
-                    continue  # coba lagi
+                elif response.status_code == 429:
+                    try:
+                        pesan = response.json().get('error', {}).get('message', '')
+                    except Exception:
+                        pesan = ''
+
+                    tunggu = 15
+                    cocok = re.search(r'retry in (\d+)', pesan, re.IGNORECASE)
+                    if cocok:
+                        tunggu = int(cocok.group(1)) + 2
+
+                    if percobaan < max_retry:
+                        time.sleep(tunggu)
+                        continue
+                    else:
+                        return None, (
+                            "Server AI sedang sibuk (terlalu banyak permintaan). "
+                            "Mohon tunggu sekitar 1 menit lalu coba lagi."
+                        )
+
+                elif response.status_code == 503:
+                    # Model ini overload, retry dulu lalu fallback ke model lain
+                    if percobaan < max_retry:
+                        time.sleep(5)
+                        continue
+                    break  # keluar, coba model fallback
+
                 else:
-                    return None, (
-                        "Server AI sedang sibuk (terlalu banyak permintaan). "
-                        "Mohon tunggu sekitar 1 menit lalu coba lagi."
-                    )
+                    try:
+                        pesan_eror = response.json().get('error', {}).get('message', 'Gagal mendapatkan jawaban.')
+                    except Exception:
+                        pesan_eror = f"Status {response.status_code}"
+                    return None, f"Eror API ({response.status_code}): {pesan_eror}"
 
-            elif response.status_code == 503:
+            except requests.exceptions.Timeout:
                 if percobaan < max_retry:
-                    time.sleep(10)
+                    time.sleep(5)
                     continue
-                return None, "Server Google Gemini sedang tidak tersedia (503). Coba beberapa saat lagi."
+                break  # coba model berikutnya
+            except Exception as e:
+                return None, f"Koneksi terputus: {str(e)}"
 
-            else:
-                try:
-                    pesan_eror = response.json().get('error', {}).get('message', 'Gagal mendapatkan jawaban.')
-                except Exception:
-                    pesan_eror = f"Status {response.status_code}"
-                return None, f"Eror API ({response.status_code}): {pesan_eror}"
-
-        except requests.exceptions.Timeout:
-            if percobaan < max_retry:
-                time.sleep(5)
-                continue
-            return None, "Koneksi ke server AI timeout. Periksa koneksi internet dan coba lagi."
-        except Exception as e:
-            return None, f"Koneksi terputus: {str(e)}"
-
-    return None, "Gagal menghubungi server AI setelah beberapa percobaan."
+    return None, (
+        "Semua model AI sedang mengalami gangguan. "
+        "Ini biasanya sementara — mohon coba lagi dalam beberapa menit."
+    )
 
 
 def tanya_deepseek(prompt_user, system_instruction):

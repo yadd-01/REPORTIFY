@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from django.db.models import Q, Count
+from django.db.models import Q, Count, F
 import requests
 import re
 
@@ -19,54 +19,106 @@ from .serializers import ArtikelSerializer
 from .forms import KomentarForm
 
 # =====================================================================
-# MESIN SISTEM PAKAR: DETEKSI TOPID TRENDING DINAMIS (RULE-BASED HYBRID)
+# HELPER: AMBIL BERITA GNEWS
+# =====================================================================
+GNEWS_API_KEY = 'ab1b66225c8b4d14fe45c82bcb8bcbec'
+
+def ambil_berita_gnews(max_hasil=5):
+    """Ambil berita dari GNews API, return list artikel atau list kosong jika gagal."""
+    url = (
+        f"https://gnews.io/api/v4/top-headlines"
+        f"?category=general&lang=id&country=id&max={max_hasil}&apikey={GNEWS_API_KEY}"
+    )
+    try:
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            return response.json().get('articles', [])
+    except Exception:
+        pass
+    return []
+
+
+# =====================================================================
+# HELPER: BUAT DAFTAR TRENDING GABUNGAN (LOKAL + GNEWS)
+# =====================================================================
+def buat_trending_gabungan(berita_gnews=None):
+    """
+    Gabungkan berita lokal (diurutkan views terbanyak) dengan berita GNews
+    menjadi satu daftar trending tanpa pembeda.
+    Setiap item punya: judul, url, gambar, sumber, views (None untuk GNews)
+    """
+    trending = []
+
+    # 1. Berita lokal — ambil 5 terbanyak views
+    berita_lokal_top = Artikel.objects.order_by('-jumlah_views', '-tanggal_publikasi')[:5]
+    for artikel in berita_lokal_top:
+        gambar_url = artikel.gambar_cover.url if artikel.gambar_cover else None
+        trending.append({
+            'judul': artikel.judul,
+            'url': f'/berita/{artikel.id}/',   # url internal
+            'gambar': gambar_url,
+            'sumber': 'Report.Hub',
+            'views': artikel.jumlah_views,
+            'is_lokal': True,
+            'artikel_id': artikel.id,
+        })
+
+    # 2. Berita GNews — pakai data yang sudah diambil (hindari request dobel)
+    if berita_gnews is None:
+        berita_gnews = ambil_berita_gnews(max_hasil=5)
+
+    for gnews in berita_gnews:
+        trending.append({
+            'judul': gnews.get('title', ''),
+            'url': gnews.get('url', '#'),
+            'gambar': gnews.get('image', ''),
+            'sumber': gnews.get('source', {}).get('name', 'GNews'),
+            'views': None,   # GNews tidak punya views
+            'is_lokal': False,
+            'artikel_id': None,
+        })
+
+    # 3. Urutkan: lokal (punya views) diutamakan, lalu campur dengan GNews
+    #    Lokal diurut by views desc, GNews menyusul di belakang
+    lokal = [t for t in trending if t['is_lokal']]
+    gnews_list = [t for t in trending if not t['is_lokal']]
+
+    # Gabung: lokal dulu (sudah urut views), lalu gnews
+    hasil_gabung = lokal + gnews_list
+
+    # Batasi tampil maksimal 8 item
+    return hasil_gabung[:8]
+
+
+# =====================================================================
+# MESIN SISTEM PAKAR: DETEKSI TOPIK TRENDING DINAMIS (RULE-BASED HYBRID)
 # =====================================================================
 def hitung_trending_topics():
-    """
-    Fungsi Sistem Pakar untuk menganalisis konten teks artikel manual,
-    menyaring kata hubung, menghitung frekuensi, dan menggabungkannya
-    dengan bobot interaksi jumlah komentar.
-    """
-    # 1. Daftar Kata Hubung (Stopwords) Bahasa Indonesia untuk dieliminasi oleh sistem
     STOPWORDS = set([
-        'yang', 'di', 'ke', 'dari', 'adalah', 'dan', 'atau', 'ini', 'itu', 'dengan', 
-        'untuk', 'pada', 'bahwa', 'oleh', 'juga', 'telah', 'sudah', 'akan', 'bisa', 
+        'yang', 'di', 'ke', 'dari', 'adalah', 'dan', 'atau', 'ini', 'itu', 'dengan',
+        'untuk', 'pada', 'bahwa', 'oleh', 'juga', 'telah', 'sudah', 'akan', 'bisa',
         'dapat', 'ada', 'dari', 'dalam', 'secara', 'tersebut', 'dia', 'mereka', 'kami',
         'kita', 'saya', 'kamu', 'seperti', 'oleh', 'karena', 'namun', 'melainkan'
     ])
-    
-    # 2. Ambil artikel lengkap dengan jumlah komentar bawaannya
+
     semua_artikel = Artikel.objects.annotate(total_komentar=Count('komentar'))
-    
     kamus_topik = {}
 
     for artikel in semua_artikel:
-        # Satukan judul dan isi berita, lalu bersihkan dari tag HTML & simbol
         teks_bersih = re.sub(r'<[^>]+>', '', (artikel.judul + " " + artikel.isi).lower())
-        kata_kata = re.findall(r'\b[a-z]{4,20}\b', teks_bersih) # Ambil kata dengan panjang 4-20 karakter
-
-        # 3. Proses Pembobotan Pakar per Kata
-        # Rule: Jika kata bukan stopwords, berikan nilai dasar frekuensi kata (+1)
-        # ditambah bonus bobot dari interaksi komentar (Jumlah Komentar * 2)
+        kata_kata = re.findall(r'\b[a-z]{4,20}\b', teks_bersih)
         bobot_interaksi = artikel.total_komentar * 2
-        
+
         for kata in kata_kata:
             if kata not in STOPWORDS:
-                if kata in kamus_topik:
-                    kamus_topik[kata] += (1 + bobot_interaksi)
-                else:
-                    kamus_topik[kata] = (1 + bobot_interaksi)
+                kamus_topik[kata] = kamus_topik.get(kata, 0) + (1 + bobot_interaksi)
 
-    # 4. Urutkan kata dari bobot nilai yang paling tinggi (Trending Utama)
     topik_terurut = sorted(kamus_topik.items(), key=lambda x: x[1], reverse=True)
-    
-    # Ambil 5 kata teratas dengan konversi huruf kapital di awal kata
     daftar_trending = [topik[0].capitalize() for topik in topik_terurut[:5]]
-    
-    # Fallback/Cadangan jika database masih kosong kosong
+
     if not daftar_trending:
         daftar_trending = ["Nasional", "Politik", "Kesehatan", "Teknologi", "Olahraga"]
-        
+
     return daftar_trending
 
 
@@ -83,55 +135,48 @@ def api_berita(request):
 def beranda(request):
     query = request.GET.get('q')
     kategori_filter = request.GET.get('kategori')
-    
+
     semua_berita_lokal = Artikel.objects.all().order_by('-tanggal_publikasi')
 
     if query:
         semua_berita_lokal = semua_berita_lokal.filter(
             Q(judul__icontains=query) | Q(isi__icontains=query)
         )
-    
+
     if kategori_filter:
         semua_berita_lokal = semua_berita_lokal.filter(kategori__nama=kategori_filter)
 
     paginator = Paginator(semua_berita_lokal, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    api_key = 'ab1b66225c8b4d14fe45c82bcb8bcbec'
-    url = f"https://gnews.io/api/v4/top-headlines?category=general&lang=id&country=id&max=5&apikey={api_key}"
-    
-    berita_gnews = []
-    pesan_error = ""
-    try:
-        response = requests.get(url)
-        if response.status_code == 200: 
-            data = response.json()
-            berita_gnews = data.get('articles', [])
-        else:
-            pesan_error = f"Error {response.status_code}: {response.text}"
-    except Exception as e:
-        pesan_error = f"Error koneksi: {e}"
+
+    # Ambil GNews sekali saja, dipakai untuk sidebar dan trending
+    berita_gnews = ambil_berita_gnews(max_hasil=5)
 
     daftar_kategori = Kategori.objects.all()
-    
-    # PANGGIL MESIN SISTEM PAKAR TRENDING
     topik_trending = hitung_trending_topics()
+
+    # Daftar trending gabungan lokal + GNews
+    daftar_trending_gabungan = buat_trending_gabungan(berita_gnews=berita_gnews)
 
     context = {
         'page_obj': page_obj,
         'berita_api': berita_gnews,
         'daftar_kategori': daftar_kategori,
-        'pesan_error': pesan_error,
-        'topik_trending': topik_trending, # Mengirimkan hasil pakar ke template HTML
+        'topik_trending': topik_trending,
+        'daftar_trending_gabungan': daftar_trending_gabungan,
     }
     return render(request, 'beranda.html', context)
 
 def detail_berita(request, artikel_id):
     artikel = get_object_or_404(Artikel, id=artikel_id)
+
+    # Tambah view count setiap kali halaman dibuka (F() untuk atomic update)
+    Artikel.objects.filter(id=artikel_id).update(jumlah_views=F('jumlah_views') + 1)
+
     daftar_komentar = artikel.komentar.all().order_by('-tanggal_dibuat')
     daftar_kategori = Kategori.objects.all()
-    
+
     if request.method == 'POST':
         form = KomentarForm(request.POST)
         if form.is_valid():
@@ -144,7 +189,6 @@ def detail_berita(request, artikel_id):
     else:
         form = KomentarForm()
 
-    # PANGGIL JUGA DI HALAMAN DETAIL AGAR NAVBAR ATAS SAMA-SAMA UPDATE
     topik_trending = hitung_trending_topics()
 
     context = {
@@ -152,7 +196,8 @@ def detail_berita(request, artikel_id):
         'daftar_komentar': daftar_komentar,
         'form': form,
         'daftar_kategori': daftar_kategori,
-        'topik_trending': topik_trending, # Dikirim ke detail_berita.html
+        'topik_trending': topik_trending,
+        'daftar_trending_gabungan': buat_trending_gabungan(),
     }
     return render(request, 'detail_berita.html', context)
 

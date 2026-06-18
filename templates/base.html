@@ -27,20 +27,21 @@
         .hover-red:hover { color: #dc3545 !important; text-decoration: underline !important; }
 
         /* ===== QUILL ARTICLE READER STYLES ===== */
-        .berita-content.ql-editor { padding: 0 !important; min-height: unset !important; border: none !important; }
-        .berita-content.ql-editor p { font-size: 1.1rem; margin-bottom: 14px; color: #1e293b; }
-        .berita-content.ql-editor h1 { font-size: 2rem; font-weight: 700; margin: 20px 0 10px; color: #0f172a; }
-        .berita-content.ql-editor h2 { font-size: 1.6rem; font-weight: 700; margin: 18px 0 8px; color: #1e293b; }
-        .berita-content.ql-editor h3 { font-size: 1.3rem; font-weight: 600; margin: 16px 0 6px; color: #334155; }
-        .berita-content.ql-editor ul, .berita-content.ql-editor ol { padding-left: 22px; margin-bottom: 14px; }
-        .berita-content.ql-editor li { font-size: 1.05rem; margin-bottom: 4px; }
-        .berita-content.ql-editor blockquote { border-left: 4px solid #3b82f6; padding: 10px 18px; background: #eff6ff; border-radius: 0 8px 8px 0; margin: 16px 0; color: #475569; font-style: italic; }
-        .berita-content.ql-editor pre { background: #1e293b; color: #7dd3fc; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; }
-        .berita-content.ql-editor table { border-collapse: collapse; width: 100%; margin: 16px 0; }
-        .berita-content.ql-editor td, .berita-content.ql-editor th { border: 1px solid #cbd5e1; padding: 10px 14px; }
-        .berita-content.ql-editor th { background: #f1f5f9; font-weight: 700; }
-        .berita-content.ql-editor a { color: #2563eb; text-decoration: underline; }
-        .berita-content.ql-editor strong { color: #0f172a; }
+        .berita-content { line-height: 1.8; font-size: 1.05rem; color: #1e293b; word-wrap: break-word; overflow-wrap: break-word; }
+        .berita-content p { font-size: 1.05rem; margin-bottom: 14px; color: #1e293b; }
+        .berita-content h1 { font-size: 2rem; font-weight: 700; margin: 20px 0 10px; color: #0f172a; }
+        .berita-content h2 { font-size: 1.6rem; font-weight: 700; margin: 18px 0 8px; color: #1e293b; }
+        .berita-content h3 { font-size: 1.3rem; font-weight: 600; margin: 16px 0 6px; color: #334155; }
+        .berita-content ul, .berita-content ol { padding-left: 22px; margin-bottom: 14px; }
+        .berita-content li { font-size: 1.05rem; margin-bottom: 4px; }
+        .berita-content blockquote { border-left: 4px solid #3b82f6; padding: 10px 18px; background: #eff6ff; border-radius: 0 8px 8px 0; margin: 16px 0; color: #475569; font-style: italic; }
+        .berita-content pre { background: #1e293b; color: #7dd3fc; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; }
+        .berita-content table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+        .berita-content td, .berita-content th { border: 1px solid #cbd5e1; padding: 10px 14px; }
+        .berita-content th { background: #f1f5f9; font-weight: 700; }
+        .berita-content a { color: #2563eb; text-decoration: underline; }
+        .berita-content strong { color: #0f172a; }
+        .berita-content img { max-width: 100%; border-radius: 8px; margin: 12px 0; }
     </style>
 </head>
 <body>
@@ -125,19 +126,35 @@
 
     <div class="bg-white border-bottom shadow-sm mb-4 trending-wrapper">
         <div class="container-fluid px-4 px-lg-5 py-2 d-flex align-items-center trending-container">
-            <span class="badge bg-danger rounded-pill me-3 px-3 py-2 fw-bold d-flex align-items-center" style="font-size: 0.85rem; letter-spacing: 0.5px;">
-                <i class="fas fa-fire me-2"></i> TRENDING HARI INI
+            <span class="badge bg-danger rounded-pill me-3 px-3 py-2 fw-bold d-flex align-items-center flex-shrink-0" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                <i class="fas fa-fire me-2"></i> TRENDING
             </span>
-            <div class="d-flex align-items-center gap-3 fw-semibold flex-nowrap" style="font-size: 0.95rem;">
-                {% for topik in topik_trending %}
-                    <a href="{% url 'beranda' %}?q={{ topik }}" class="text-dark text-decoration-none hover-primary text-nowrap">
-                        #{{ topik }}
-                    </a>
+            <div class="d-flex align-items-center gap-3 fw-semibold flex-nowrap" style="font-size: 0.9rem;">
+                {% for item in daftar_trending_gabungan %}
+                    {% if item.is_lokal %}
+                        <a href="{% url 'detail_berita' item.artikel_id %}" class="text-dark text-decoration-none trending-link text-nowrap d-flex align-items-center gap-1">
+                            {% if item.views > 0 %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size:0.7rem;"><i class="fas fa-eye"></i> {{ item.views }}</span>
+                            {% endif %}
+                            {{ item.judul|truncatewords:6 }}
+                        </a>
+                    {% else %}
+                        <a href="{{ item.url }}" target="_blank" class="text-dark text-decoration-none trending-link text-nowrap">
+                            {{ item.judul|truncatewords:6 }}
+                        </a>
+                    {% endif %}
                     {% if not forloop.last %}
-                        <span class="text-muted small">•</span>
+                        <span class="text-muted small flex-shrink-0">•</span>
                     {% endif %}
                 {% empty %}
-                    <span class="text-muted italic small">Belum ada data tren terkalkulasi hari ini.</span>
+                    {% for topik in topik_trending %}
+                        <a href="{% url 'beranda' %}?q={{ topik }}" class="text-dark text-decoration-none trending-link text-nowrap">
+                            #{{ topik }}
+                        </a>
+                        {% if not forloop.last %}
+                            <span class="text-muted small">•</span>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             </div>
         </div>

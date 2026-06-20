@@ -201,6 +201,15 @@ def admin_users(request):
 
 @login_required
 @staff_required
+def admin_user_delete(request, user_id):
+    user_obj = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        if user_obj != request.user:
+            user_obj.delete()
+    return redirect('admin_users')
+
+@login_required
+@staff_required
 def admin_reports(request):
     from django.db.models import Count
     today = timezone.now().date()

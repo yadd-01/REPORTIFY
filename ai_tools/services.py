@@ -18,9 +18,11 @@ def _panggil_gemini(teks_prompt, max_retry=2):
     """
     import re
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL")
 
     if not GEMINI_API_KEY:
         return None, "GEMINI_API_KEY tidak ditemukan. Pastikan sudah diset di environment variable."
+
 
     headers = {'Content-Type': 'application/json'}
     payload = {"contents": [{"parts": [{"text": teks_prompt}]}]}
@@ -29,10 +31,13 @@ def _panggil_gemini(teks_prompt, max_retry=2):
     daftar_model = [GEMINI_MODEL, GEMINI_MODEL_FALLBACK]
 
     for model in daftar_model:
-        url = (
-            f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{model}:generateContent?key={GEMINI_API_KEY}"
-        )
+        if GEMINI_BASE_URL:
+            url = f"{GEMINI_BASE_URL}{GEMINI_API_KEY}"
+        else:
+            url = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{model}:generateContent?key={GEMINI_API_KEY}"
+            )
 
         for percobaan in range(max_retry + 1):
             try:

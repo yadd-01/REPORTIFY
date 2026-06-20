@@ -1,5 +1,5 @@
 {% extends 'admin_base.html' %}
-{% block title %}Executive Dashboard - REPORT.hub Admin{% endblock %}
+{% block title %}Dashboard - REPORT.hub Admin{% endblock %}
 {% block nav_dashboard %}active{% endblock %}
 
 {% block extra_style %}
@@ -242,12 +242,12 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
 </div>
 
 <div class="page-header fade-in mb-4">
-    <h1 class="page-title" style="font-family:'Syne', sans-serif; font-weight:800; color:#fff;">Executive Dashboard</h1>
-    <p class="page-subtitle" style="color: #a0aec0;">Real-time analytical overview of the editorial ecosystem.</p>
+    <h1 class="page-title" style="font-family: 'Syne', sans-serif;">Executive Dashboard</h1>
+    <p class="page-subtitle">Real-time analytical overview of the editorial ecosystem.</p>
 </div>
 
 <div class="row g-3 mb-4">
-    <div class="col-6 col-xl-3 fade-in delay-1">
+    <div class="col-md-4 fade-in delay-1">
         <div class="stat-card">
             <div class="stat-icon" style="background: rgba(67, 97, 238, 0.15);">
                 <i class="fas fa-newspaper" style="color: #4361ee;"></i>
@@ -258,7 +258,7 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
         </div>
     </div>
 
-    <div class="col-6 col-xl-3 fade-in delay-2">
+    <div class="col-md-4 fade-in delay-2">
         <div class="stat-card">
             <div class="stat-icon" style="background: rgba(76, 201, 240, 0.15);">
                 <i class="fas fa-users" style="color: #4cc9f0;"></i>
@@ -269,7 +269,7 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
         </div>
     </div>
 
-    <div class="col-6 col-xl-3 fade-in delay-3">
+    <div class="col-md-4 fade-in delay-3">
         <div class="stat-card">
             <div class="stat-icon" style="background: rgba(225, 29, 72, 0.15);">
                 <i class="fas fa-bolt" style="color: #e11d48;"></i>
@@ -280,17 +280,6 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
             </div>
             <div class="stat-value">{{ news_today|default:"0" }}</div>
             <div class="stat-label">News Today</div>
-        </div>
-    </div>
-
-    <div class="col-6 col-xl-3 fade-in delay-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(168, 85, 247, 0.15);">
-                <i class="fas fa-robot" style="color: #a855f7;"></i>
-            </div>
-            <div class="stat-change success">98% Success</div>
-            <div class="stat-value">{{ ai_used|default:"0" }}</div>
-            <div class="stat-label">AI Summary Used</div>
         </div>
     </div>
 </div>
@@ -408,25 +397,9 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
             </div>
         </div>
 
-        <div class="card-admin mb-4">
-            <div class="card-body-admin" style="padding: 0;">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <div style="width:28px; height:28px; background: rgba(67, 97, 238, 0.2); border-radius:8px; display:flex; align-items:center; justify-content:center;">
-                        <i class="fas fa-robot" style="color:#4cc9f0; font-size:0.75rem;"></i>
-                    </div>
-                    <span style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; color:#fff;">AI Status</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span style="font-size:0.8rem; color:#a0aec0;">Tokens Remaining</span>
-                    <span style="font-size:0.85rem; font-weight:600; color:#fff;">{{ ai_tokens_used|default:"0" }}K / 5M</span>
-                </div>
-                <div class="token-bar-bg">
-                    <div class="token-bar-fill" style="width: {{ ai_token_percent|default:0 }}%;"></div>
-                </div>
-            </div>
-        </div>
 
-        <div class="card-admin">
+
+        <div class="card-admin mb-4">
             <div class="card-header-admin">
                 <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Recent Logins</div>
                 <a href="{% url 'admin_users' %}" style="font-size:0.78rem; color:#4cc9f0; text-decoration:none; font-weight: 500;">View All</a>
@@ -476,55 +449,11 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
                 </table>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="row g-4">
-    <div class="col-lg-6 fade-in delay-2">
-        <div class="card-admin h-100">
-            <div class="card-header-admin">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">
-                    <i class="fas fa-robot me-2" style="color:#4cc9f0;"></i>AI Summary Engine
-                </div>
-                <span class="healthy-badge">Healthy</span>
-            </div>
-            <div class="card-body-admin">
-                <div class="ai-meta-row">
-                    <div class="ai-meta-item">
-                        <div class="ai-meta-label">Last Prompt</div>
-                        <div style="font-size:0.82rem; color:#cbd5e0; font-style:italic; margin-top:6px; line-height:1.5;">
-                            "{{ last_prompt|default:'Summarize the latest technology news from today...' }}"
-                        </div>
-                    </div>
-                    <div class="ai-meta-item" style="max-width:140px; text-align:right;">
-                        <div class="ai-meta-label">Token Usage (24h)</div>
-                        <div class="ai-meta-value">{{ token_24h|default:"0" }}</div>
-                        <div style="font-size:0.7rem; color:#a0aec0;">units</div>
-                    </div>
-                </div>
-
-                <div style="display:flex; align-items:center; gap:8px; margin-top:16px; margin-bottom:6px;">
-                    <i class="fas fa-terminal" style="color:#a0aec0; font-size:0.7rem;"></i>
-                    <span style="font-size:0.65rem; letter-spacing:1.5px; text-transform:uppercase; color:#a0aec0; font-weight:600;">Response Preview</span>
-                </div>
-                <div class="ai-response-box">
-                    {{ ai_last_response|default:"Belum ada ringkasan yang dibuat. Gunakan fitur AI Summary untuk menghasilkan ringkasan otomatis dari artikel terbaru." }}
-                </div>
-
-                <div style="margin-top:16px;">
-                    <a href="{% url 'admin_ai_summary' %}" class="btn-admin-primary" style="width:100%; justify-content:center;">
-                        <i class="fas fa-magic"></i> Buka AI Summary
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6 fade-in delay-3">
-        <div class="card-admin h-100">
+        <div class="card-admin">
             <div class="card-header-admin">
                 <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Editorial Velocity</div>
-                <span style="font-size:0.8rem; color:#a0aec0;">Artikel per hari (7 hari terakhir)</span>
+                <span style="font-size:0.8rem; color:#a0aec0;">Artikel per hari (7 hari)</span>
             </div>
             <div class="card-body-admin">
                 <div class="vel-bars" id="velBars">
@@ -545,7 +474,7 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
                         <div style="font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:{% if forloop.last %}#4cc9f0{% else %}#fff{% endif %};">
                             {{ day.count }}
                         </div>
-                        <div style="font-size:0.65rem; color:#a0aec0;">artikel</div>
+                        <div style="font-size:0.65rem; color:#a0aec0;">Artikel</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -555,7 +484,7 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <div style="font-size:0.7rem; color:#a0aec0; text-transform:uppercase; letter-spacing:1px;">Total Minggu Ini</div>
-                        <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:#fff;">{{ weekly_total }} artikel</div>
+                        <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:#fff;">{{ weekly_total }} Artikel</div>
                     </div>
                     <a href="{% url 'admin_reports' %}" class="btn-admin-primary">
                         <i class="fas fa-chart-line"></i> Full Report

@@ -13,25 +13,25 @@
     <div class="col-6 col-md-3">
         <div class="stat-card" style="padding:18px;">
             <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Artikel Bulan Ini</div>
-            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_this_month }}</div>
+            <div style="font-family:'Poppins',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_this_month }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card" style="padding:18px;">
             <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Total Kategori</div>
-            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ artikel_per_kat|length }}</div>
+            <div style="font-family:'Poppins',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ artikel_per_kat|length }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card" style="padding:18px;">
             <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Total Komentar</div>
-            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_comments }}</div>
+            <div style="font-family:'Poppins',sans-serif; font-size:2rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_comments }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card" style="padding:18px;">
             <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Artikel Minggu Ini</div>
-            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:var(--accent-green); margin-top:6px;">
+            <div style="font-family:'Poppins',sans-serif; font-size:2rem; font-weight:800; color:var(--accent-green); margin-top:6px;">
                 {% with total=velocity|length %}
                     {{ velocity|last }}
                 {% endwith %}
@@ -45,7 +45,7 @@
     <div class="col-lg-5 fade-in delay-2">
         <div class="card-admin h-100">
             <div class="card-header-admin">
-                <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Artikel per Kategori</span>
+                <span style="font-family:'Poppins',sans-serif; font-weight:700; color:#fff;">Artikel per Kategori</span>
             </div>
             <div class="card-body-admin">
                 {% for kat in artikel_per_kat %}
@@ -78,7 +78,7 @@
     <div class="col-lg-7 fade-in delay-3">
         <div class="card-admin h-100">
             <div class="card-header-admin">
-                <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Artikel Paling Banyak Komentar</span>
+                <span style="font-family:'Poppins',sans-serif; font-weight:700; color:#fff;">Artikel Paling Banyak Komentar</span>
             </div>
             <table class="admin-table">
                 <thead>
@@ -101,7 +101,7 @@
                             <span style="background:rgba(59,110,248,0.1); color:#818cf8; border-radius:6px; padding:3px 9px; font-size:0.72rem; font-weight:600;">{{ artikel.kategori.nama }}</span>
                         </td>
                         <td>
-                            <div style="font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; color:#fff;">{{ artikel.jumlah_komentar }}</div>
+                            <div style="font-family:'Poppins',sans-serif; font-size:1.1rem; font-weight:700; color:#fff;">{{ artikel.jumlah_komentar }}</div>
                         </td>
                     </tr>
                     {% empty %}

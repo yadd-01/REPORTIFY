@@ -12,32 +12,32 @@
     <div class="col-6 col-md-3">
         <div class="stat-card" style="padding:16px;">
             <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Total Users</div>
-            <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_users }}</div>
+            <div style="font-family:'Poppins',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_users }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card" style="padding:16px;">
             <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Admin / Staff</div>
-            <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_staff }}</div>
+            <div style="font-family:'Poppins',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_staff }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card" style="padding:16px;">
             <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Regular Users</div>
-            <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_regular|default:"0" }}</div>
+            <div style="font-family:'Poppins',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; margin-top:6px;">{{ total_regular|default:"0" }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card" style="padding:16px;">
             <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Baru (7 hari)</div>
-            <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:var(--accent-green); margin-top:6px;">{{ new_users_week|default:"0" }}</div>
+            <div style="font-family:'Poppins',sans-serif; font-size:1.6rem; font-weight:800; color:var(--accent-green); margin-top:6px;">{{ new_users_week|default:"0" }}</div>
         </div>
     </div>
 </div>
 
 <div class="card-admin fade-in delay-2">
     <div class="card-header-admin">
-        <span style="font-family:'Syne',sans-serif; font-weight:700; color:#fff;">Daftar Pengguna</span>
+        <span style="font-family:'Poppins',sans-serif; font-weight:700; color:#fff;">Daftar Pengguna</span>
         <form method="GET" style="display:flex; gap:8px;">
             <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Cari username / email..."
                 style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); border-radius:9px; padding:7px 14px; font-size:0.8rem; font-family:'DM Sans',sans-serif; width:220px;"
@@ -55,6 +55,7 @@
                     <th>Bergabung</th>
                     <th>Role</th>
                     <th>Status</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,7 +64,7 @@
                     <td style="color:var(--text-muted); font-size:0.75rem;">{{ forloop.counter }}</td>
                     <td>
                         <div class="d-flex align-items-center gap-3">
-                            <div style="width:32px; height:32px; background:linear-gradient(135deg, #3b6ef8, #6366f1); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; color:#fff; flex-shrink:0;">
+                            <div style="width:32px; height:32px; background:linear-gradient(135deg, #3b6ef8, #6366f1); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-weight:700; font-size:0.8rem; color:#fff; flex-shrink:0;">
                                 {{ user.username|slice:":1"|upper }}
                             </div>
                             <div>
@@ -90,6 +91,14 @@
                         {% else %}
                         <span class="badge-draft">INACTIVE</span>
                         {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'admin_user_delete' user.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-icon danger" onclick="return confirm('Yakin ingin menghapus user ini?');" title="Hapus User">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 {% empty %}

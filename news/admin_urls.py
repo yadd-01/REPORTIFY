@@ -19,6 +19,7 @@ urlpatterns = [
 
     # Lain-lain
     path('users/', admin_views.admin_users, name='admin_users'),
+    path('users/<int:user_id>/delete/', admin_views.admin_user_delete, name='admin_user_delete'),
     path('reports/', admin_views.admin_reports, name='admin_reports'),
     path('ai-summary/', admin_views.admin_ai_summary, name='admin_ai_summary'),
 ]

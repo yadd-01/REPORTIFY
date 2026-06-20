@@ -34,12 +34,12 @@ def admin_dashboard(request):
     context = {
         'total_articles': Artikel.objects.count(),
         'total_users': User.objects.count(),
-        'recent_articles': Artikel.objects.order_by('-tanggal_publikasi')[:5],
         'total_users': User.objects.count(),
+        'recent_news': Artikel.objects.order_by('-tanggal_publikasi')[:5],
         'recent_users': User.objects.all().order_by('-last_login')[:5],
         'velocity': get_velocity_data(),
         'weekly_total': Artikel.objects.filter(tanggal_publikasi__gte=timezone.now() - timedelta(days=7)).count(),
-        'kategori_stats': Kategori.objects.all(),
+        'daftar_kategori': Kategori.objects.all(),
     }
     return render(request, 'admin_panel/dashboard.html', context)
 
@@ -177,6 +177,15 @@ def admin_users(request):
         'new_users_week': User.objects.filter(date_joined__gte=seven_days_ago).count(),
     }
     return render(request, 'admin_panel/admin_users.html', context)
+
+@login_required
+@staff_required
+def admin_user_delete(request, user_id):
+    user_obj = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        if user_obj != request.user:
+            user_obj.delete()
+    return redirect('admin_users')
 
 @login_required
 @staff_required

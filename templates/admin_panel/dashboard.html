@@ -1,5 +1,5 @@
 {% extends 'admin_base.html' %}
-{% block title %}Executive Dashboard - REPORT.hub Admin{% endblock %}
+{% block title %}Dashboard - REPORT.hub Admin{% endblock %}
 {% block nav_dashboard %}active{% endblock %}
 
 {% block extra_style %}
@@ -23,7 +23,7 @@
 .stat-change.new { background: rgba(59,110,248,0.12); color: #3b6ef8; }
 .stat-change.success { background: rgba(168,85,247,0.12); color: #a855f7; }
 .stat-value {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 2.1rem;
     font-weight: 800;
     color: #fff;
@@ -108,7 +108,7 @@
 }
 .ai-meta-item { flex: 1; }
 .ai-meta-label { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
-.ai-meta-value { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: #fff; margin-top: 3px; }
+.ai-meta-value { font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 700; color: #fff; margin-top: 3px; }
 
 .healthy-badge {
     background: rgba(34,197,94,0.15);
@@ -125,13 +125,13 @@
 
 {% block content %}
 <div class="page-header fade-in">
-    <h1 class="page-title">Executive Dashboard</h1>
+    <h1 class="page-title">Dashboard</h1>
     <p class="page-subtitle">Real-time analytical overview of the editorial ecosystem.</p>
 </div>
 
 <div class="row g-3 mb-4">
 
-    <div class="col-6 col-xl-3 fade-in delay-1">
+    <div class="col-md-4 fade-in delay-1">
         <div class="stat-card">
             <div class="stat-icon" style="background: rgba(59,110,248,0.12);">
                 <i class="fas fa-newspaper" style="color: var(--accent-blue);"></i>
@@ -142,7 +142,7 @@
         </div>
     </div>
 
-    <div class="col-6 col-xl-3 fade-in delay-2">
+    <div class="col-md-4 fade-in delay-2">
         <div class="stat-card">
             <div class="stat-icon" style="background: rgba(99,102,241,0.12);">
                 <i class="fas fa-users" style="color: #818cf8;"></i>
@@ -153,7 +153,7 @@
         </div>
     </div>
 
-    <div class="col-6 col-xl-3 fade-in delay-3">
+    <div class="col-md-4 fade-in delay-3">
         <div class="stat-card">
             <div class="stat-icon" style="background: rgba(249,115,22,0.12);">
                 <i class="fas fa-bolt" style="color: var(--accent-orange);"></i>
@@ -167,17 +167,6 @@
         </div>
     </div>
 
-    <div class="col-6 col-xl-3 fade-in delay-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(168,85,247,0.12);">
-                <i class="fas fa-robot" style="color: #a855f7;"></i>
-            </div>
-            <div class="stat-change success">98% Success</div>
-            <div class="stat-value">{{ ai_used|default:"0" }}</div>
-            <div class="stat-label">AI Summary Used</div>
-        </div>
-    </div>
-
 </div>
 
 <div class="row g-4 mb-4">
@@ -186,7 +175,7 @@
         <div class="card-admin h-100">
             <div class="card-header-admin">
                 <div>
-                    <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Recent News Operations</div>
+                    <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:1rem; color:#fff;">Recent News Operations</div>
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">{{ recent_news|length }} latest articles</div>
                 </div>
                 <a href="{% url 'admin_article_create' %}" class="btn-admin-primary">
@@ -266,7 +255,7 @@
 
         <div class="card-admin mb-4">
             <div class="card-header-admin">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Categories</div>
+                <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Categories</div>
                 <a href="{% url 'admin_categories' %}" class="btn-icon" title="Add Category">
                     <i class="fas fa-plus"></i>
                 </a>
@@ -294,27 +283,10 @@
             </div>
         </div>
 
-        <div class="card-admin mb-4" style="background: linear-gradient(135deg, #0f1628, #141830);">
-            <div class="card-body-admin">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <div style="width:28px; height:28px; background: rgba(59,110,248,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center;">
-                        <i class="fas fa-robot" style="color:var(--accent-blue); font-size:0.75rem;"></i>
-                    </div>
-                    <span style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; color:#fff;">AI Status</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span style="font-size:0.78rem; color:var(--text-muted);">Tokens Remaining</span>
-                    <span style="font-size:0.8rem; font-weight:600; color:var(--text-primary);">{{ ai_tokens_used|default:"0" }}K / 5M</span>
-                </div>
-                <div class="token-bar-bg">
-                    <div class="token-bar-fill" style="width: {{ ai_token_percent|default:0 }}%;"></div>
-                </div>
-            </div>
-        </div>
 
         <div class="card-admin">
             <div class="card-header-admin d-flex justify-content-between align-items-center">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Recent Logins</div>
+                <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Recent Logins</div>
                 <a href="{% url 'admin_users' %}" style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;">View All</a>
             </div>
             <div class="card-body-admin p-0">
@@ -363,55 +335,9 @@
             </div>
         </div>
 
-    </div>
-</div>
-
-<div class="row g-4">
-
-    <div class="col-lg-6 fade-in delay-2">
-        <div class="card-admin h-100">
+        <div class="card-admin mt-4">
             <div class="card-header-admin">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">
-                    <i class="fas fa-robot me-2" style="color:var(--accent-blue);"></i>AI Summary Engine
-                </div>
-                <span class="healthy-badge">Healthy</span>
-            </div>
-            <div class="card-body-admin">
-                <div class="ai-meta-row">
-                    <div class="ai-meta-item">
-                        <div class="ai-meta-label">Last Prompt</div>
-                        <div style="font-size:0.8rem; color:var(--text-secondary); font-style:italic; margin-top:6px; line-height:1.5;">
-                            "{{ last_prompt|default:'Summarize the latest technology news from today...' }}"
-                        </div>
-                    </div>
-                    <div class="ai-meta-item" style="max-width:140px; text-align:right;">
-                        <div class="ai-meta-label">Token Usage (24h)</div>
-                        <div class="ai-meta-value">{{ token_24h|default:"0" }}</div>
-                        <div style="font-size:0.7rem; color:var(--text-muted);">units</div>
-                    </div>
-                </div>
-
-                <div style="display:flex; align-items:center; gap:8px; margin-top:16px; margin-bottom:6px;">
-                    <i class="fas fa-terminal" style="color:var(--text-muted); font-size:0.7rem;"></i>
-                    <span style="font-size:0.65rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); font-weight:600;">Response Preview</span>
-                </div>
-                <div class="ai-response-box">
-                    {{ ai_last_response|default:"Belum ada ringkasan yang dibuat. Gunakan fitur AI Summary untuk menghasilkan ringkasan otomatis dari artikel terbaru." }}
-                </div>
-
-                <div style="margin-top:16px;">
-                    <a href="{% url 'admin_ai_summary' %}" class="btn-admin-primary" style="width:100%; justify-content:center;">
-                        <i class="fas fa-magic"></i> Buka AI Summary
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6 fade-in delay-3">
-        <div class="card-admin h-100">
-            <div class="card-header-admin">
-                <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Editorial Velocity</div>
+                <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:0.95rem; color:#fff;">Editorial Velocity</div>
                 <span style="font-size:0.75rem; color:var(--text-muted);">Artikel per hari (7 hari terakhir)</span>
             </div>
             <div class="card-body-admin">
@@ -430,7 +356,7 @@
                 <div style="margin-top:20px; display:flex; gap:24px;">
                     {% for day in velocity_data %}
                     <div style="flex:1; text-align:center;">
-                        <div style="font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; color:{% if forloop.last %}var(--accent-orange){% else %}var(--text-primary){% endif %};">
+                        <div style="font-family:'Poppins',sans-serif; font-size:0.9rem; font-weight:700; color:{% if forloop.last %}var(--accent-orange){% else %}var(--text-primary){% endif %};">
                             {{ day.count }}
                         </div>
                         <div style="font-size:0.62rem; color:var(--text-muted);">artikel</div>
@@ -443,7 +369,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Total Minggu Ini</div>
-                        <div style="font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#fff;">{{ weekly_total }} artikel</div>
+                        <div style="font-family:'Poppins',sans-serif; font-size:1.4rem; font-weight:800; color:#fff;">{{ weekly_total }} artikel</div>
                     </div>
                     <a href="{% url 'admin_reports' %}" class="btn-admin-primary">
                         <i class="fas fa-chart-line"></i> Full Report
@@ -451,8 +377,8 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
-
 </div>
 {% endblock %}
 

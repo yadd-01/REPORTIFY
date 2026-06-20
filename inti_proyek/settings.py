@@ -166,6 +166,10 @@ ACCOUNT_EMAIL_VERIFICATION = 'none' # Matikan pengiriman email konfirmasi (karen
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
+ACCOUNT_ADAPTER = 'inti_proyek.adapter.NoLoginAccountAdapter'
+ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login/'
+
+
 # Kredensial Google Cloud
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

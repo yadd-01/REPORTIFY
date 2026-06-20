@@ -13,8 +13,12 @@ def tanya_deepseek(prompt_user, system_instruction):
     """
 
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL")
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"        
+    if GEMINI_BASE_URL:
+        url = f"{GEMINI_BASE_URL}{GEMINI_API_KEY}"
+    else:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     headers = {
         'Content-Type': 'application/json'
     }
@@ -61,8 +65,12 @@ def tanya_deepseek(prompt_user, system_instruction):
 
 def cek_hoaks_berita(teks_berita_user):
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL")
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"
+    if GEMINI_BASE_URL:
+        url = f"{GEMINI_BASE_URL}{GEMINI_API_KEY}"
+    else:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     headers = {'Content-Type': 'application/json'}
     
     system_instruction = (

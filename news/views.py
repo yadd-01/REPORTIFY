@@ -51,14 +51,13 @@ def ambil_berita_gnews(max_hasil=5):
 # =====================================================================
 def buat_trending_gabungan(berita_gnews=None):
     """
-    Gabungkan berita lokal (diurutkan views terbanyak) dengan berita GNews
-    menjadi satu daftar trending tanpa pembeda.
-    Setiap item punya: judul, url, gambar, sumber, views (None untuk GNews)
+    Daftar trending khusus berita lokal (diurutkan views terbanyak).
+    Berita dari API tidak lagi disertakan atas permintaan user.
     """
     trending = []
 
-    # 1. Berita lokal — ambil 5 terbanyak views
-    berita_lokal_top = Artikel.objects.order_by('-jumlah_views', '-tanggal_publikasi')[:5]
+    # Ambil hingga 8 berita lokal terbanyak views
+    berita_lokal_top = Artikel.objects.order_by('-jumlah_views', '-tanggal_publikasi')[:8]
     for artikel in berita_lokal_top:
         gambar_url = artikel.gambar_cover.url if artikel.gambar_cover else None
         trending.append({
@@ -71,31 +70,7 @@ def buat_trending_gabungan(berita_gnews=None):
             'artikel_id': artikel.id,
         })
 
-    # 2. Berita GNews — pakai data yang sudah diambil (hindari request dobel)
-    if berita_gnews is None:
-        berita_gnews = ambil_berita_gnews(max_hasil=5)
-
-    for gnews in berita_gnews:
-        trending.append({
-            'judul': gnews.get('title', ''),
-            'url': gnews.get('url', '#'),
-            'gambar': gnews.get('image', ''),
-            'sumber': gnews.get('source', {}).get('name', 'GNews'),
-            'views': None,   # GNews tidak punya views
-            'is_lokal': False,
-            'artikel_id': None,
-        })
-
-    # 3. Urutkan: lokal (punya views) diutamakan, lalu campur dengan GNews
-    #    Lokal diurut by views desc, GNews menyusul di belakang
-    lokal = [t for t in trending if t['is_lokal']]
-    gnews_list = [t for t in trending if not t['is_lokal']]
-
-    # Gabung: lokal dulu (sudah urut views), lalu gnews
-    hasil_gabung = lokal + gnews_list
-
-    # Batasi tampil maksimal 8 item
-    return hasil_gabung[:8]
+    return trending
 
 
 # =====================================================================

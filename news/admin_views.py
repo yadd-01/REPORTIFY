@@ -212,11 +212,15 @@ def admin_user_delete(request, user_id):
 @staff_required
 def admin_reports(request):
     from django.db.models import Count
+    from .models import Komentar
     today = timezone.now().date()
+    week_ago = timezone.now() - timedelta(days=7)
     context = {
         'total_this_month': Artikel.objects.filter(tanggal_publikasi__month=today.month).count(),
-        'artikel_per_kat': Kategori.objects.annotate(jumlah=Count('artikel')),
+        'artikel_per_kat': Kategori.objects.annotate(jumlah=Count('artikel')).order_by('-jumlah'),
         'artikel_komentar': Artikel.objects.annotate(jumlah_komentar=Count('komentar')).order_by('-jumlah_komentar')[:5],
+        'total_comments': Komentar.objects.count(),
+        'weekly_articles': Artikel.objects.filter(tanggal_publikasi__gte=week_ago).count(),
     }
     return render(request, 'admin_panel/admin_reports.html', context)
 

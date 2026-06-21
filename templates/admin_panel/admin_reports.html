@@ -32,9 +32,7 @@
         <div class="stat-card" style="padding:18px;">
             <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Artikel Minggu Ini</div>
             <div style="font-family:'Poppins',sans-serif; font-size:2rem; font-weight:800; color:var(--accent-green); margin-top:6px;">
-                {% with total=velocity|length %}
-                    {{ velocity|last }}
-                {% endwith %}
+                {{ weekly_articles }}
             </div>
         </div>
     </div>

@@ -8,8 +8,8 @@ load_dotenv()  # Memuat variabel lingkungan dari file .env
 
 # Model Gemini yang digunakan — ganti di satu tempat ini saja
 # gemini-1.5-flash lebih stabil, fallback ke gemini-2.0-flash jika 503
-GEMINI_MODEL = "gemini-1.5-flash"
-GEMINI_MODEL_FALLBACK = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL_FALLBACK = "gemini-2.5-flash"
 
 def _panggil_gemini(teks_prompt, max_retry=2):
     """
@@ -35,7 +35,7 @@ def _panggil_gemini(teks_prompt, max_retry=2):
             url = f"{GEMINI_BASE_URL}{GEMINI_API_KEY}"
         else:
             url = (
-                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key="
                 f"{model}:generateContent?key={GEMINI_API_KEY}"
             )
 
